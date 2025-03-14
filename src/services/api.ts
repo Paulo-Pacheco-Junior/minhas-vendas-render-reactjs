@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "sales-manager-10-production.up.railway.app",
+  baseURL: "https://sales-manager-10-production.up.railway.app",
   timeout: 30000,
 });
 
