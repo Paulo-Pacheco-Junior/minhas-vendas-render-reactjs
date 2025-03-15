@@ -176,6 +176,7 @@ export function NewSale() {
               onChange={handleInternetPlanSpeedChange}
             >
               <option value="">Selecione...</option>
+              <option value="200 Mb">200 Mb</option>
               <option value="500 Mb">500 Mb</option>
               <option value="700 Mb">700 Mb</option>
               <option value="1 Giga">1 Giga</option>
@@ -228,6 +229,7 @@ export function NewSale() {
             >
               <option value="">Selecione...</option>
               <option value="8 as 12">8 as 12</option>
+              <option value="9 as 12">9 as 12</option>
               <option value="13 as 18">13 as 18</option>
             </select>
           </label>

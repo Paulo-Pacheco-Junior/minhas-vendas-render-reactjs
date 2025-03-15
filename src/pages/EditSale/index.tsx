@@ -228,6 +228,7 @@ export function EditSale() {
               onChange={handleInternetPlanSpeedChange}
             >
               <option value="">Selecione...</option>
+              <option value="200 Mb">200 Mb</option>
               <option value="500 Mb">500 Mb</option>
               <option value="700 Mb">700 Mb</option>
               <option value="1 Giga">1 Giga</option>
@@ -280,6 +281,7 @@ export function EditSale() {
             >
               <option value="">Selecione...</option>
               <option value="8 as 12">8 as 12</option>
+              <option value="9 as 12">9 as 12</option>
               <option value="13 as 18">13 as 18</option>
             </select>
           </label>
@@ -315,14 +317,14 @@ export function EditSale() {
           <label>
             Status:
             <select id="status" value={status} onChange={handleStatusChange}>
-              <option value="Em aprovisionamento">Em Aprovisionamento</option>
+              <option value="Em_aprovisionamento">Em Aprovisionamento</option>
               <option value="Instalada">Instalada</option>
               <option value="Cancelada">Cancelada</option>
-              <option value="with_pending_issues">Com pendência</option>
-              <option value="Aguardando pagamento">Aguardando pagamento</option>
-              <option value="Pendência técnica">Pendência técnica</option>
+              <option value="Com_pendencia">Com pendência</option>
+              <option value="Aguardando_pagamento">Aguardando pagamento</option>
+              <option value="Pendencia_tecnica">Pendência técnica</option>
               <option value="Draft">Draft</option>
-              <option value="Sem slot">Sem slot</option>
+              <option value="Sem_slot">Sem slot</option>
             </select>
           </label>
           <div>
