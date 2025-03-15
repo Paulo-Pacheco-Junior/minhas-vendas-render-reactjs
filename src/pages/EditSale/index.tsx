@@ -129,6 +129,7 @@ export function EditSale() {
       customerName,
       serviceOrder,
       extension,
+      status,
       // observation,
     });
 
