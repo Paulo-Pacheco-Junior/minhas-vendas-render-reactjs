@@ -22,21 +22,12 @@ export const Container = styled.header`
   }
 `;
 
-export const Title = styled.h1`
-  font-size: 4.2rem;
-  margin: 0.6rem auto;
-
-  @media (max-width: 768px) {
-    font-size: 3.4rem;
-    margin: 1.6rem auto 2.4rem;
-  }
-`;
-
 export const NavBtn = styled(Link)`
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 1.4rem;
+  margin: 2rem 0;
   background-color: ${({ theme }) => theme.COLORS.BG_GRAY_700};
   color: ${({ theme }) => theme.COLORS.GRAY_100};
 

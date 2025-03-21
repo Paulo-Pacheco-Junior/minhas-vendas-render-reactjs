@@ -63,7 +63,7 @@ export function Home() {
       setSales(data);
     }
     handleGetSales();
-  }, []);
+  }, [sales]);
 
   function handleRoleAll() {
     setAgentRole("all");

@@ -3,7 +3,7 @@ import { RiUserReceivedLine } from "react-icons/ri";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { RiLoginBoxLine } from "react-icons/ri";
 import { useContext } from "react";
-import { Container, Title, NavBtn } from "./styles";
+import { Container, NavBtn } from "./styles";
 import { UserContext } from "../../contexts/UserContext";
 import api from "../../services/api";
 
@@ -22,7 +22,6 @@ export function Header() {
 
   return (
     <Container>
-      <Title>Televendas Receptivo</Title>
       <nav>
         {user.name === "Visitante" ? (
           <NavBtn to="/login">

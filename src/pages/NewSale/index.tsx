@@ -208,6 +208,7 @@ export function NewSale() {
               <option value="">Selecione...</option>
               <option value="Legado">Legado</option>
               <option value="Nova Fibra">Nova Fibra</option>
+              <option value="Nova Fibra + Fixo">Nova Fibra + Fixo</option>
             </select>
           </label>
           <label>
@@ -230,6 +231,7 @@ export function NewSale() {
               <option value="">Selecione...</option>
               <option value="8 as 12">8 as 12</option>
               <option value="9 as 12">9 as 12</option>
+              <option value="13 as 17">13 as 17</option>
               <option value="13 as 18">13 as 18</option>
             </select>
           </label>

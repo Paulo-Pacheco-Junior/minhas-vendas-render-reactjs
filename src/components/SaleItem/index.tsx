@@ -41,25 +41,29 @@ export function SaleItem({ sale }: any) {
       }).format(new Date(installationDate))
     : "-";
 
+  const transformStatus = (status: string) => {
+    return status.replace(/_/g, " ");
+  };
+
   return (
     <Container
       style={{
         backgroundColor:
-          sale.observation === "Instalada"
+          sale.status === "Instalada"
             ? "#00433d"
-            : sale.observation === "Cancelada"
+            : sale.status === "Cancelada"
             ? "#510508"
-            : sale.observation === "Com pendência"
+            : sale.status === "Com_pendencia"
             ? "#694f01"
-            : sale.observation === "Aguardando pagamento"
+            : sale.status === "Aguardando_pagamento"
             ? "#694f01"
-            : sale.observation === "Pendência técnica"
+            : sale.status === "Pendencia_tecnica"
             ? "#694f01"
-            : sale.observation === "Draft"
+            : sale.status === "Draft"
             ? "#694f01"
-            : sale.observation === "Sem slot"
+            : sale.status === "Sem_slot"
             ? "#694f01"
-            : sale.observation === "Em aprovisionamento"
+            : sale.status === "Em_aprovisionamento"
             ? "#312E38"
             : "#312E38",
       }}
@@ -113,8 +117,10 @@ export function SaleItem({ sale }: any) {
             <span>Ramal:</span> {sale.extension}
           </p>
           <p>
-            <span>Status:</span>
-            {sale.status === "" ? "Em aprovisionamento" : sale.status}
+            <span>Status:</span>{" "}
+            {transformStatus(sale.status) === ""
+              ? "Em aprovisionamento"
+              : transformStatus(sale.status)}
           </p>
           {/* <p>
             <span>Observação:</span> {sale.observation}

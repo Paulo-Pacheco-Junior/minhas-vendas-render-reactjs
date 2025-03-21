@@ -261,6 +261,7 @@ export function EditSale() {
               <option value="">Selecione...</option>
               <option value="Legado">Legado</option>
               <option value="Nova Fibra">Nova Fibra</option>
+              <option value="Nova Fibra + Fixo">Nova Fibra + Fixo</option>
             </select>
           </label>
           <label>
@@ -283,6 +284,7 @@ export function EditSale() {
               <option value="">Selecione...</option>
               <option value="8 as 12">8 as 12</option>
               <option value="9 as 12">9 as 12</option>
+              <option value="13 as 17">13 as 17</option>
               <option value="13 as 18">13 as 18</option>
             </select>
           </label>
@@ -321,9 +323,9 @@ export function EditSale() {
               <option value="Em_aprovisionamento">Em Aprovisionamento</option>
               <option value="Instalada">Instalada</option>
               <option value="Cancelada">Cancelada</option>
-              <option value="Com_pendencia">Com pendência</option>
+              <option value="Com_pendencia">Com pendencia</option>
               <option value="Aguardando_pagamento">Aguardando pagamento</option>
-              <option value="Pendencia_tecnica">Pendência técnica</option>
+              <option value="Pendencia_tecnica">Pendencia tecnica</option>
               <option value="Draft">Draft</option>
               <option value="Sem_slot">Sem slot</option>
             </select>
