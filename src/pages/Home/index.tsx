@@ -60,7 +60,9 @@ export function Home() {
 
       console.log(data);
 
-      setSales(data);
+      if (JSON.stringify(data) !== JSON.stringify(sales)) {
+        setSales(data);
+      }
     }
     handleGetSales();
   }, [sales]);
@@ -109,6 +111,11 @@ export function Home() {
           "BC778472",
           "BC785551",
           "BC792075",
+          "BC793865",
+          "BC762541",
+          "BC788129",
+          "BC794166",
+          "BC787603",
         ].includes(sale.user.employeeId.toUpperCase())
       ).length;
     }
@@ -131,6 +138,11 @@ export function Home() {
           "BC790415",
           "BC792265",
           "BC792302",
+          "BC793865",
+          "BC762541",
+          "BC788129",
+          "BC794166",
+          "BC787603",
         ].includes(sale.user.employeeId.toUpperCase())
       ).length;
     }
@@ -282,7 +294,17 @@ export function Home() {
                       sale.user.employeeId.toLowerCase() ===
                         "BC785551".toLowerCase() ||
                       sale.user.employeeId.toLowerCase() ===
-                        "BC792075".toLowerCase())) ||
+                        "BC792075".toLowerCase() ||
+                      sale.user.employeeId.toLowerCase() ===
+                        "BC793865".toLowerCase() ||
+                      sale.user.employeeId.toLowerCase() ===
+                        "BC762541".toLowerCase() ||
+                      sale.user.employeeId.toLowerCase() ===
+                        "BC788129".toLowerCase() ||
+                      sale.user.employeeId.toLowerCase() ===
+                        "BC794166".toLowerCase() ||
+                      sale.user.employeeId.toLowerCase() ===
+                        "BC787603".toLowerCase())) ||
                   (user.role === "seller" && sale.userId === user.id)
                 ) {
                   return <SaleItem key={sale.id} sale={sale} />;
@@ -324,7 +346,17 @@ export function Home() {
                   sale.user.employeeId.toLowerCase() ===
                     "BC792265".toLowerCase() ||
                   sale.user.employeeId.toLowerCase() ===
-                    "BC792302".toLowerCase())
+                    "BC792302".toLowerCase() ||
+                  sale.user.employeeId.toLowerCase() ===
+                    "BC793865".toLowerCase() ||
+                  sale.user.employeeId.toLowerCase() ===
+                    "BC762541".toLowerCase() ||
+                  sale.user.employeeId.toLowerCase() ===
+                    "BC788129".toLowerCase() ||
+                  sale.user.employeeId.toLowerCase() ===
+                    "BC794166".toLowerCase() ||
+                  sale.user.employeeId.toLowerCase() ===
+                    "BC787603".toLowerCase())
               ) {
                 return <SaleItem key={sale.id} sale={sale} />;
               }
@@ -385,7 +417,7 @@ export function Home() {
             Receptivos
           </button>
         </AgentRoleButtons>
-      )}{" "}
+      )}
     </Container>
   );
 }
