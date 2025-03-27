@@ -115,7 +115,6 @@ export function Home() {
           "BC762541",
           "BC788129",
           "BC794166",
-          "BC787603",
         ].includes(sale.user.employeeId.toUpperCase())
       ).length;
     }
@@ -142,7 +141,6 @@ export function Home() {
           "BC762541",
           "BC788129",
           "BC794166",
-          "BC787603",
         ].includes(sale.user.employeeId.toUpperCase())
       ).length;
     }
@@ -302,9 +300,7 @@ export function Home() {
                       sale.user.employeeId.toLowerCase() ===
                         "BC788129".toLowerCase() ||
                       sale.user.employeeId.toLowerCase() ===
-                        "BC794166".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC787603".toLowerCase())) ||
+                        "BC794166".toLowerCase())) ||
                   (user.role === "seller" && sale.userId === user.id)
                 ) {
                   return <SaleItem key={sale.id} sale={sale} />;
@@ -354,9 +350,7 @@ export function Home() {
                   sale.user.employeeId.toLowerCase() ===
                     "BC788129".toLowerCase() ||
                   sale.user.employeeId.toLowerCase() ===
-                    "BC794166".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC787603".toLowerCase())
+                    "BC794166".toLowerCase())
               ) {
                 return <SaleItem key={sale.id} sale={sale} />;
               }
