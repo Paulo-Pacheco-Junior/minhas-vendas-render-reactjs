@@ -111,7 +111,7 @@ export function Home() {
 
   const getSalesCount = (
     role: string,
-    selectedMonth: number | "all",
+    selectedMonth: number,
     selectedDay: number | "all"
   ) => {
     let count = 0;
@@ -187,6 +187,11 @@ export function Home() {
 
     const filteredSalesByMonthAndDay = sales.filter((sale) => {
       const saleDate = new Date(sale.saleDate);
+
+      if (selectedDay === "all") {
+        return saleDate.getMonth() === selectedMonth;
+      }
+
       return (
         saleDate.getMonth() === selectedMonth &&
         saleDate.getDate() === selectedDay
