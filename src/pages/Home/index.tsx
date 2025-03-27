@@ -47,6 +47,12 @@ export function Home() {
 
   const [scrollState, setScrollState] = useState(0);
 
+  const [filteredSales, setFilteredSales] = useState<any[]>([]);
+  const [selectedMonth, setSelectedMonth] = useState<number>(
+    new Date().getMonth()
+  );
+  const [selectedDay, setSelectedDay] = useState<number | "all">("all");
+
   const token = JSON.parse(localStorage.getItem("@token") || "[]");
 
   useEffect(() => {
@@ -67,6 +73,30 @@ export function Home() {
     handleGetSales();
   }, [sales]);
 
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedMonth(Number(e.target.value));
+  };
+
+  const handleDayChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedDay(e.target.value === "all" ? "all" : Number(e.target.value));
+  };
+
+  useEffect(() => {
+    const salesFiltered = sales.filter((sale) => {
+      const saleDate = new Date(sale.saleDate);
+
+      if (selectedDay === "all") {
+        return saleDate.getMonth() === selectedMonth;
+      }
+      return (
+        saleDate.getMonth() === selectedMonth &&
+        saleDate.getDate() === selectedDay
+      );
+    });
+
+    setFilteredSales(salesFiltered);
+  }, [sales, selectedMonth, selectedDay]);
+
   function handleRoleAll() {
     setAgentRole("all");
   }
@@ -79,89 +109,108 @@ export function Home() {
     setAgentRole("receptive");
   }
 
-  const getSalesCount = (role: string) => {
+  const getSalesCount = (
+    role: string,
+    selectedMonth: number | "all",
+    selectedDay: number | "all"
+  ) => {
     let count = 0;
 
+    const allowedEmployeeIdsAll = [
+      "BC762174",
+      "BC763168",
+      "BC763169",
+      "BC769445",
+      "BC769454",
+      "BC777180",
+      "BC777190",
+      "BC777739",
+      "BC789568",
+      "BC789581",
+      "BC789994",
+      "BC789995",
+      "BC790415",
+      "BC792265",
+      "BC792302",
+      "BC795371",
+      "BC794633",
+      "BC762199",
+      "BC714145",
+      "BC762104",
+      "BC762175",
+      "BC770607",
+      "BC770702",
+      "BC778472",
+      "BC785551",
+      "BC792075",
+      "BC793865",
+      "BC762541",
+      "BC788129",
+      "BC794166",
+    ];
+
+    const allowedEmployeeIdsActive = [
+      "BC762174",
+      "BC763168",
+      "BC763169",
+      "BC769445",
+      "BC769454",
+      "BC777180",
+      "BC777190",
+      "BC777739",
+      "BC789568",
+      "BC789581",
+      "BC789994",
+      "BC789995",
+      "BC790415",
+      "BC792265",
+      "BC792302",
+      "BC793865",
+      "BC762541",
+      "BC788129",
+      "BC794166",
+    ];
+
+    const allowedEmployeeIdsReceptive = [
+      "BC795371",
+      "BC794633",
+      "BC762199",
+      "BC714145",
+      "BC762104",
+      "BC762175",
+      "BC770607",
+      "BC770702",
+      "BC778472",
+      "BC785551",
+      "BC792075",
+    ];
+
+    const filteredSalesByMonthAndDay = sales.filter((sale) => {
+      const saleDate = new Date(sale.saleDate);
+      return (
+        saleDate.getMonth() === selectedMonth &&
+        saleDate.getDate() === selectedDay
+      );
+    });
+
     if (role === "all") {
-      count = sales.filter((sale) =>
-        [
-          "BC762174",
-          "BC763168",
-          "BC763169",
-          "BC769445",
-          "BC769454",
-          "BC777180",
-          "BC777190",
-          "BC777739",
-          "BC789568",
-          "BC789581",
-          "BC789994",
-          "BC789995",
-          "BC790415",
-          "BC792265",
-          "BC792302",
-          "BC795371",
-          "BC794633",
-          "BC762199",
-          "BC714145",
-          "BC762104",
-          "BC762175",
-          "BC770607",
-          "BC770702",
-          "BC778472",
-          "BC785551",
-          "BC792075",
-          "BC793865",
-          "BC762541",
-          "BC788129",
-          "BC794166",
-        ].includes(sale.user.employeeId.toUpperCase())
+      count = filteredSalesByMonthAndDay.filter((sale) =>
+        allowedEmployeeIdsAll.includes(sale.user.employeeId.toUpperCase())
       ).length;
     }
 
     if (role === "active") {
-      count = sales.filter((sale) =>
-        [
-          "BC762174",
-          "BC763168",
-          "BC763169",
-          "BC769445",
-          "BC769454",
-          "BC777180",
-          "BC777190",
-          "BC777739",
-          "BC789568",
-          "BC789581",
-          "BC789994",
-          "BC789995",
-          "BC790415",
-          "BC792265",
-          "BC792302",
-          "BC793865",
-          "BC762541",
-          "BC788129",
-          "BC794166",
-        ].includes(sale.user.employeeId.toUpperCase())
+      count = filteredSalesByMonthAndDay.filter((sale) =>
+        allowedEmployeeIdsActive.includes(sale.user.employeeId.toUpperCase())
       ).length;
     }
 
     if (role === "receptive") {
-      count = sales.filter((sale) =>
-        [
-          "BC795371",
-          "BC794633",
-          "BC762199",
-          "BC714145",
-          "BC762104",
-          "BC762175",
-          "BC770607",
-          "BC770702",
-          "BC778472",
-          "BC785551",
-          "BC792075",
-        ].includes(sale.user.employeeId.toUpperCase())
+      count = filteredSalesByMonthAndDay.filter((sale) =>
+        allowedEmployeeIdsReceptive.includes(sale.user.employeeId.toUpperCase())
       ).length;
     }
+
     return count < 10 ? `0${count}` : count.toString();
   };
 
@@ -206,7 +255,7 @@ export function Home() {
         <SalesFilter>
           <SalesCount>
             <strong>Total de Vendas: </strong>
-            <span>{getSalesCount(agentRole)}</span>
+            <span>{getSalesCount(agentRole, selectedMonth, selectedDay)}</span>
           </SalesCount>
           <AgentRoleButtons style={{ paddingRight: "25rem" }}>
             <button
@@ -230,6 +279,60 @@ export function Home() {
           </AgentRoleButtons>
         </SalesFilter>
       )}
+
+      <select
+        value={selectedMonth}
+        onChange={handleMonthChange}
+        style={{ marginLeft: "4rem", marginRight: "1rem" }}
+      >
+        <option value={0}>Janeiro</option>
+        <option value={1}>Fevereiro</option>
+        <option value={2}>Março</option>
+        <option value={3}>Abril</option>
+        <option value={4}>Maio</option>
+        <option value={5}>Junho</option>
+        <option value={6}>Julho</option>
+        <option value={7}>Agosto</option>
+        <option value={8}>Setembro</option>
+        <option value={9}>Outubro</option>
+        <option value={10}>Novembro</option>
+        <option value={11}>Dezembro</option>
+      </select>
+
+      <select value={selectedDay} onChange={handleDayChange}>
+        <option value={"all"}>todos</option>
+        <option value={1}>1</option>
+        <option value={2}>2</option>
+        <option value={3}>3</option>
+        <option value={4}>4</option>
+        <option value={5}>5</option>
+        <option value={6}>6</option>
+        <option value={7}>7</option>
+        <option value={8}>8</option>
+        <option value={9}>9</option>
+        <option value={10}>10</option>
+        <option value={11}>11</option>
+        <option value={12}>12</option>
+        <option value={13}>13</option>
+        <option value={14}>14</option>
+        <option value={15}>15</option>
+        <option value={16}>16</option>
+        <option value={17}>17</option>
+        <option value={18}>18</option>
+        <option value={19}>19</option>
+        <option value={20}>20</option>
+        <option value={21}>21</option>
+        <option value={22}>22</option>
+        <option value={23}>23</option>
+        <option value={24}>24</option>
+        <option value={25}>25</option>
+        <option value={26}>26</option>
+        <option value={27}>27</option>
+        <option value={28}>28</option>
+        <option value={29}>29</option>
+        <option value={30}>30</option>
+        <option value={31}>31</option>
+      </select>
       <main>
         <ul>
           {agentRole === "all" &&
@@ -238,7 +341,7 @@ export function Home() {
               !sales.some((sale) => sale.userId === user.id)) ? (
               <p>Nenhuma venda encontrada.</p>
             ) : (
-              sales.map((sale) => {
+              filteredSales.map((sale) => {
                 if (
                   (user.role === "supervisor" &&
                     (sale.user.employeeId.toLowerCase() ===
