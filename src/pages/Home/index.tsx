@@ -30,7 +30,7 @@ interface Sale {
   saleDate: string;
   internetPlanSpeed: string;
   internetType: string;
-  installationDay: string;
+  installationDate: string;
   installationShift: string;
   serviceOrder: string;
   extension: string;
@@ -83,15 +83,27 @@ export function Home() {
 
   useEffect(() => {
     const salesFiltered = sales.filter((sale) => {
-      const saleDate = new Date(sale.saleDate);
+      if (user.role === "seller") {
+        const intallationDate = new Date(sale.installationDate);
 
-      if (selectedDay === "all") {
-        return saleDate.getMonth() === selectedMonth;
+        if (selectedDay === "all") {
+          return intallationDate.getMonth() === selectedMonth;
+        }
+        return (
+          intallationDate.getMonth() === selectedMonth &&
+          intallationDate.getDate() === selectedDay
+        );
+      } else {
+        const saleDate = new Date(sale.saleDate);
+
+        if (selectedDay === "all") {
+          return saleDate.getMonth() === selectedMonth;
+        }
+        return (
+          saleDate.getMonth() === selectedMonth &&
+          saleDate.getDate() === selectedDay
+        );
       }
-      return (
-        saleDate.getMonth() === selectedMonth &&
-        saleDate.getDate() === selectedDay
-      );
     });
 
     setFilteredSales(salesFiltered);
