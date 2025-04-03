@@ -38,6 +38,6 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   input:focus, textarea:focus {
-    border: 1px solid #8234e9;
+    border: 1px solid ${({ theme }) => theme.COLORS.GRAY_100};
   }
 `;

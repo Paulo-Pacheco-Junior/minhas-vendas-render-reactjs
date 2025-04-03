@@ -64,11 +64,7 @@ export function Home() {
       });
       const data = await response.data;
 
-      console.log(data);
-
-      if (JSON.stringify(data) !== JSON.stringify(sales)) {
-        setSales(data);
-      }
+      setSales(data);
     }
     handleGetSales();
   }, [sales]);

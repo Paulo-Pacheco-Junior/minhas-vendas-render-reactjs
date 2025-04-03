@@ -1,12 +1,22 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import api from "../../services/api";
-import { Container, SaleButtons, SaleContent, Agent, Footer } from "./styles";
+import {
+  Container,
+  SaleButtons,
+  SaleContent,
+  Agent,
+  Footer,
+  Observation,
+} from "./styles";
 import { UserContext } from "../../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import { toDate } from "date-fns-tz";
 
 export function SaleItem({ sale }: any) {
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
+
+  const [observation, setObservation] = useState(sale.observation);
 
   async function handleEditSale(id: string) {
     if (user.employeeId === sale.user.employeeId) {
@@ -45,24 +55,69 @@ export function SaleItem({ sale }: any) {
     return status.replace(/_/g, " ");
   };
 
+  const timeZone = "America/Sao_Paulo";
+
+  async function handleChangeObservation(id: string) {
+    await api.put(`/sales/${id}`, {
+      userId: user.id,
+      cpfCnpj: sale.cpfCnpj,
+      region: sale.region,
+      ticket: sale.ticket,
+      callerIdPhone: sale.callerIdPhone,
+      phone: sale.phone,
+      saleDate: sale.saleDate ? toDate(sale.saleDate, { timeZone }) : null,
+      internetPlanSpeed: sale.internetPlanSpeed,
+      paymentMethod: sale.paymentMethod,
+      internetType: sale.interntType,
+      installationDate: sale.installationDate
+        ? toDate(sale.installationDate, { timeZone })
+        : null,
+      installationShift: sale.installationShift,
+      customerName: sale.customerName,
+      serviceOrder: sale.serviceOrder,
+      extension: sale.extension,
+      status: sale.status,
+      observation,
+    });
+    navigate("/");
+  }
+
   return (
     <Container
       style={{
+        border:
+          sale.status === "Instalada"
+            ? "1px solid #0a8d3c"
+            : sale.status === "Cancelada"
+            ? "1px solid #a80f14"
+            : sale.status === "Com_pendencia"
+            ? "1px solid #a07d14"
+            : sale.status === "Aguardando_pagamento"
+            ? "1px solid #a07d14"
+            : sale.status === "Pendencia_tecnica"
+            ? "1px solid #a07d14"
+            : sale.status === "Draft"
+            ? "1px solid #a07d14"
+            : sale.status === "Sem_slot"
+            ? "1px solid #a07d14"
+            : sale.status === "Em_aprovisionamento"
+            ? "1px solid #312E38"
+            : "1px solid #312E38",
         backgroundColor:
           sale.status === "Instalada"
-            ? "#00433d"
+            ? "#2b302c"
             : sale.status === "Cancelada"
-            ? "#510508"
+            ? "#3f2121"
             : sale.status === "Com_pendencia"
-            ? "#694f01"
+            ? "#30302b"
             : sale.status === "Aguardando_pagamento"
-            ? "#694f01"
+            ? "#30302b"
             : sale.status === "Pendencia_tecnica"
-            ? "#694f01"
+            ? "#30302b"
             : sale.status === "Draft"
-            ? "#694f01"
+            ? "#30302b"
             : sale.status === "Sem_slot"
-            ? "#694f01"
+            ? "#30302b"
             : sale.status === "Em_aprovisionamento"
             ? "#312E38"
             : "#312E38",
@@ -122,9 +177,20 @@ export function SaleItem({ sale }: any) {
               ? "Em aprovisionamento"
               : transformStatus(sale.status)}
           </p>
-          {/* <p>
-            <span>Observação:</span> {sale.observation}
-          </p> */}
+          <Observation>
+            <span>Observação:</span>
+            <textarea
+              value={observation}
+              onChange={(e) => setObservation(e.target.value)}
+            >
+              {sale.observation}
+            </textarea>
+            {user.role === "seller" && (
+              <button onClick={() => handleChangeObservation(sale.id)}>
+                Salvar
+              </button>
+            )}
+          </Observation>
         </div>
       </SaleContent>
       <Footer>
@@ -147,7 +213,9 @@ export function SaleItem({ sale }: any) {
             </button>
           )}
           {user.employeeId === sale.user.employeeId && (
-            <button onClick={() => handleDeleteSale(sale.id)}>Excluir</button>
+            <button type="submit" onClick={() => handleDeleteSale(sale.id)}>
+              Excluir
+            </button>
           )}
         </SaleButtons>
       </Footer>

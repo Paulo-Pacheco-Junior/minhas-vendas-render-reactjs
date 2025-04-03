@@ -5,6 +5,7 @@ export const Container = styled.li`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  border: 2px solid;
 
   width: 80%;
   margin: 0 auto;
@@ -79,4 +80,35 @@ export const Footer = styled.footer`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+export const Observation = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  textarea {
+    padding: 0.2rem 0.6rem;
+    background-color: transparent;
+    color: ${({ theme }) => theme.COLORS.GRAY_100};
+    font-size: 1.3rem;
+    font-weight: 300;
+    border: 1px solid ${({ theme }) => theme.COLORS.GRAY_300};
+    border-radius: 4px;
+    resize: none;
+  }
+
+  button {
+    padding: 0.2rem 0.6rem;
+    background-color: transparent;
+    color: ${({ theme }) => theme.COLORS.GRAY_100};
+    font-size: 1.3rem;
+    font-weight: 500;
+    border: 1px solid ${({ theme }) => theme.COLORS.GRAY_300};
+    border-radius: 4px;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  }
 `;
