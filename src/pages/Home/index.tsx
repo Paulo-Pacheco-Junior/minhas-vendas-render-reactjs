@@ -43,6 +43,8 @@ export function Home() {
   const { user } = useContext(UserContext);
 
   const [sales, setSales] = useState<Sale[]>([]);
+  const [employeeIdArray, setEmployeeIdArray] = useState<string[]>([]);
+
   const [agentRole, setAgentRole] = useState("all");
 
   const [scrollState, setScrollState] = useState(0);
@@ -62,7 +64,16 @@ export function Home() {
           Authorization: `Bearer ${token}`,
         },
       });
+
       const data = await response.data;
+
+      for (const sale of data) {
+        if (sale.userId === "fb778f32-9ab6-48e0-b81d-c33bcc309ac5") {
+          const array = JSON.parse(sale.observation);
+          setEmployeeIdArray(array?.observation);
+          break;
+        }
+      }
 
       setSales(data);
     }
@@ -124,38 +135,7 @@ export function Home() {
   ) => {
     let count = 0;
 
-    const allowedEmployeeIdsAll = [
-      "BC762174",
-      "BC763168",
-      "BC763169",
-      "BC769445",
-      "BC769454",
-      "BC777180",
-      "BC777190",
-      "BC777739",
-      "BC789568",
-      "BC789581",
-      "BC789994",
-      "BC789995",
-      "BC790415",
-      "BC792265",
-      "BC792302",
-      "BC795371",
-      "BC794633",
-      "BC762199",
-      "BC714145",
-      "BC762104",
-      "BC762175",
-      "BC770607",
-      "BC770702",
-      "BC778472",
-      "BC785551",
-      "BC792075",
-      "BC793865",
-      "BC762541",
-      "BC788129",
-      "BC794166",
-    ];
+    const allowedEmployeeIdsAll = employeeIdArray;
 
     const allowedEmployeeIdsActive = [
       "BC762174",
@@ -293,11 +273,7 @@ export function Home() {
         </SalesFilter>
       )}
 
-      <select
-        value={selectedMonth}
-        onChange={handleMonthChange}
-        style={{ marginLeft: "4rem", marginRight: "1rem" }}
-      >
+      <select value={selectedMonth} onChange={handleMonthChange}>
         <option value={0}>Janeiro</option>
         <option value={1}>Fevereiro</option>
         <option value={2}>Março</option>
@@ -312,8 +288,12 @@ export function Home() {
         <option value={11}>Dezembro</option>
       </select>
 
-      <select value={selectedDay} onChange={handleDayChange}>
-        <option value={"all"}>todos</option>
+      <select
+        value={selectedDay}
+        onChange={handleDayChange}
+        style={{ marginLeft: "0.2rem" }}
+      >
+        <option value={"all"}>Todos</option>
         <option value={1}>1</option>
         <option value={2}>2</option>
         <option value={3}>3</option>
@@ -349,81 +329,28 @@ export function Home() {
       <main>
         <ul>
           {agentRole === "all" &&
-            (sales.length === 0 ||
+          (sales.length === 0 ||
             (user.role === "seller" &&
-              !sales.some((sale) => sale.userId === user.id)) ? (
-              <p>Nenhuma venda encontrada.</p>
-            ) : (
-              filteredSales.map((sale) => {
-                if (
-                  (user.role === "supervisor" &&
-                    (sale.user.employeeId.toLowerCase() ===
-                      "BC762174".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC763168".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC763169".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC769445".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC769454".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC777180".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC777190".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC777739".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC789568".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC789581".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC789994".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC789995".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC790415".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC792265".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC792302".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC795371".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC794633".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC762199".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC714145".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC762104".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC762175".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC770607".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC770702".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC778472".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC785551".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC792075".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC793865".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC762541".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC788129".toLowerCase() ||
-                      sale.user.employeeId.toLowerCase() ===
-                        "BC794166".toLowerCase())) ||
-                  (user.role === "seller" && sale.userId === user.id)
-                ) {
-                  return <SaleItem key={sale.id} sale={sale} />;
-                }
-                return null;
-              })
-            ))}
+              !sales.some((sale) => sale.userId === user.id))) ? (
+            <p>Nenhuma venda encontrada.</p>
+          ) : (
+            filteredSales.map((sale) => {
+              const isEmployeeAllowed = employeeIdArray.includes(
+                sale.user.employeeId
+              );
+
+              const isSellerRole =
+                user.role === "seller" && sale.userId === user.id;
+
+              if (
+                (user.role === "supervisor" && isEmployeeAllowed) ||
+                isSellerRole
+              ) {
+                return <SaleItem key={sale.id} sale={sale} />;
+              }
+              return null;
+            })
+          )}
 
           {agentRole === "active" &&
             sales.map((sale) => {

@@ -10,6 +10,21 @@ export const Container = styled.div`
   p {
     text-align: center;
   }
+
+  select,
+  option {
+    margin-top: 1rem;
+    padding: 0.4rem 0.5rem;
+    font-weight: 500;
+    background-color: ${({ theme }) => theme.COLORS.BG_GRAY_900};
+    color: ${({ theme }) => theme.COLORS.GRAY_100};
+    border-radius: 4px;
+  }
+
+  select {
+    margin-left: 7.4rem;
+    margin-right: 1rem;
+  }
 `;
 
 export const NewSaleBtn = styled(Link)`
@@ -54,6 +69,7 @@ export const SalesFilter = styled.div`
 
 export const SalesCount = styled.div`
   margin-top: 3rem;
+  margin-left: 3.2rem;
 
   span {
     font-size: 2rem;

@@ -58,9 +58,11 @@ export function SignUp() {
     email,
     password,
   }: RegisterData) {
+    const formattedEmployeeId = employeeId.toUpperCase();
+
     await api.post<ApiResponse>("/users", {
       name,
-      employeeId,
+      employeeId: formattedEmployeeId,
       email,
       password,
     });
@@ -71,7 +73,7 @@ export function SignUp() {
   return (
     <Container>
       <div>
-        <h1>TLV RECEPTIVO</h1>
+        <h1>Minhas Vendas</h1>
         <p>Seu Gerenciador de Vendas</p>
 
         <h2>Faça o seu Cadastro</h2>
