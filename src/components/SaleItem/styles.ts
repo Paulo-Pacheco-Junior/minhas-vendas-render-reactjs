@@ -74,7 +74,7 @@ export const SaleButtons = styled.div`
 
   .leftbtns {
     display: flex;
-    gap: 1.2rem;
+    gap: 1.8rem;
     margin-right: 1rem;
     justify-content: space-between;
     margin-left: 0.6rem;
@@ -84,6 +84,8 @@ export const SaleButtons = styled.div`
       border-radius: 4px;
       border: 0;
       background-color: ${({ theme }) => theme.COLORS.BG_RED};
+      background-color: #c62828;
+
       color: #daddcc;
       font-weight: 600;
       font-size: 1.2rem;
@@ -122,5 +124,60 @@ export const ObservationBtn = styled.div`
     &:hover {
       background-color: rgba(0, 0, 0, 0.1);
     }
+  }
+`;
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); // Ofusca o fundo
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+export const ModalBox = styled.div`
+  background-color: white;
+  background-color: ${({ theme }) => theme.COLORS.BG_GRAY_900};
+  color: ${({ theme }) => theme.COLORS.GRAY_100};
+
+  padding: 2rem;
+  padding: 4rem 3rem;
+  border-radius: 0.5rem;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+`;
+
+export const ModalButtons = styled.div`
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-around;
+
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 30%;
+  }
+
+  button:first-child {
+    background-color: ${({ theme }) => theme.COLORS.BG_RED};
+    background-color: #c62828;
+
+    color: white;
+    color: ${({ theme }) => theme.COLORS.GRAY_100};
+  }
+
+  button:last-child {
+    background-color: rgba(224, 224, 224, 0.41);
+    background-color: rgba(138, 242, 78, 0.59);
+    color: #192b1c;
   }
 `;
