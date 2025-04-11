@@ -76,10 +76,13 @@ export const NewSaleBtn = styled.button`
   background-color: #35a69b;
   color: black;
   color: #daddcc;
+  background-color: #8af24e;
+  color: #192b1c;
   font-size: 1.6rem;
   font-weight: 700;
   padding: 1rem 1.2rem;
   outline: none;
   border: none;
   border-radius: 0.8rem;
+  width: 100%;
 `;

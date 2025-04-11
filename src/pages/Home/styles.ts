@@ -22,7 +22,7 @@ export const Container = styled.div`
   }
 
   select {
-    margin-left: 7.4rem;
+    margin-left: 5rem;
     margin-right: 1rem;
   }
 `;
@@ -35,6 +35,8 @@ export const NewSaleBtn = styled(Link)`
   text-decoration: none;
   background-color: ${({ theme }) => theme.COLORS.BG_ORANGE};
   color: black;
+  background-color: #8af24e;
+  color: #192b1c;
   font-size: 1.8rem;
   font-weight: 700;
   padding: 1.2rem 1.6rem;
@@ -69,7 +71,7 @@ export const SalesFilter = styled.div`
 
 export const SalesCount = styled.div`
   margin-top: 3rem;
-  margin-left: 3.2rem;
+  margin-left: 1rem;
 
   span {
     font-size: 2rem;
@@ -100,7 +102,8 @@ export const AgentRoleButtons = styled.div`
     border-radius: 8px;
 
     &.selected {
-      background-color: #4caf50;
+      background-color: #8bf24e;
+      color: #192b1c;
     }
   }
 `;

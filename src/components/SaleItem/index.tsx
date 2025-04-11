@@ -7,6 +7,7 @@ import {
   Agent,
   Footer,
   Observation,
+  ObservationBtn,
 } from "./styles";
 import { UserContext } from "../../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -126,7 +127,8 @@ export function SaleItem({ sale }: any) {
       <SaleContent>
         <div>
           <p>
-            <span>CPF/CNPJ:</span> {sale.cpfCnpj}
+            <span>CPF/CNPJ:</span>
+            <br /> {sale.cpfCnpj}
           </p>
           <p>
             <span>UF:</span> {sale.region}
@@ -134,16 +136,21 @@ export function SaleItem({ sale }: any) {
           <p>
             <span>Ticket:</span> {sale.ticket}
           </p>
+        </div>
+        <div>
           <p>
-            <span>N° Binado:</span> {sale.callerIdPhone}
+            <span>N° Binado:</span>
+            <br /> {sale.callerIdPhone}
           </p>
           <p>
-            <span>N° Contato:</span> {sale.phone}
+            <span>N° Contato:</span>
+            <br /> {sale.phone}
           </p>
         </div>
         <div>
           <p>
-            <span>Data da Venda:</span> {formattedSaleDate}
+            <span>Data da Venda:</span>
+            <br /> {formattedSaleDate}
           </p>
           <p>
             <span>Velocidade:</span> {sale.internetPlanSpeed}
@@ -151,19 +158,23 @@ export function SaleItem({ sale }: any) {
           <p>
             <span>Pagamento:</span> {sale.paymentMethod}
           </p>
+        </div>
+        <div>
           <p>
-            <span>Tipo:</span> {sale.internetType}
-          </p>
-          <p>
-            <span>Data da Instalação:</span> {formattedInstallationDate}
+            <span>Data da Instalação:</span>
+            <br /> {formattedInstallationDate}
           </p>
           <p>
             <span>Horário:</span> {sale.installationShift}
           </p>
+          <p>
+            <span>Tipo:</span> {sale.internetType}
+          </p>
         </div>
         <div>
           <p>
-            <span>Nome do Cliente:</span> {sale.customerName}
+            <span>Nome do Cliente:</span>
+            <br /> {sale.customerName}
           </p>
           <p>
             <span>Os:</span> {sale.serviceOrder}
@@ -171,8 +182,10 @@ export function SaleItem({ sale }: any) {
           <p>
             <span>Ramal:</span> {sale.extension}
           </p>
+        </div>
+        <div>
           <p>
-            <span>Status:</span>{" "}
+            <span>Status: </span>
             {transformStatus(sale.status) === ""
               ? "Em aprovisionamento"
               : transformStatus(sale.status)}
@@ -185,11 +198,11 @@ export function SaleItem({ sale }: any) {
             >
               {sale.observation}
             </textarea>
-            {user.role === "seller" && (
+            {/* {user.role === "supervisor" && (
               <button onClick={() => handleChangeObservation(sale.id)}>
                 Salvar
               </button>
-            )}
+            )} */}
           </Observation>
         </div>
       </SaleContent>
@@ -201,21 +214,30 @@ export function SaleItem({ sale }: any) {
           </Agent>
         )}
         <SaleButtons>
-          {user.employeeId === sale.user.employeeId && (
-            <button
-              onClick={() => handleEditSale(sale.id)}
-              style={{
-                backgroundColor: "#cdcd69",
-                color: "black",
-              }}
-            >
-              Editar
-            </button>
-          )}
-          {user.employeeId === sale.user.employeeId && (
-            <button type="submit" onClick={() => handleDeleteSale(sale.id)}>
-              Excluir
-            </button>
+          <div className="leftbtns">
+            {user.employeeId === sale.user.employeeId && (
+              <button
+                onClick={() => handleEditSale(sale.id)}
+                style={{
+                  backgroundColor: "#cdcd69",
+                  color: "black",
+                }}
+              >
+                Editar
+              </button>
+            )}
+            {user.employeeId === sale.user.employeeId && (
+              <button type="submit" onClick={() => handleDeleteSale(sale.id)}>
+                Excluir
+              </button>
+            )}
+          </div>
+          {user.role === "seller" && (
+            <ObservationBtn>
+              <button onClick={() => handleChangeObservation(sale.id)}>
+                Salvar
+              </button>
+            </ObservationBtn>
           )}
         </SaleButtons>
       </Footer>

@@ -6,7 +6,7 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding-left: 3rem;
+  padding-left: 1.4rem;
   margin-top: 3rem;
   float: left;
 `;
@@ -16,13 +16,12 @@ export const LinkButton = styled(Link)`
   text-decoration: none;
   text-align: center;
   background-color: ${({ theme }) => theme.COLORS.BG_ORANGE};
-  background-color: #35a69b;
-  color: black;
-  color: #daddcc;
+  background-color: #8af24e;
+  color: #192b1c;
   padding: 0.5rem 0.8rem;
   width: 10rem;
   font-size: 1.4rem;
-  font-weight: 800;
+  font-weight: 600;
   margin-bottom: 2rem;
   border-radius: 8px;
 `;

@@ -50,6 +50,11 @@ export function ImportantLinks() {
         </LinkButton>
       </div>
       <div>
+        <LinkButton to="https://m365.cloud.microsoft/" target="_blank">
+          Outlook
+        </LinkButton>
+      </div>
+      <div>
         <LinkButton to="https://www.oi.com.br/negociacao/" target="_blank">
           Oi Negocia
         </LinkButton>

@@ -78,7 +78,7 @@ export function Home() {
       setSales(data);
     }
     handleGetSales();
-  }, [sales]);
+  }, []);
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMonth(Number(e.target.value));

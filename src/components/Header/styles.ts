@@ -32,7 +32,7 @@ export const NavBtn = styled(Link)`
   color: ${({ theme }) => theme.COLORS.GRAY_100};
 
   text-decoration-thickness: 12%;
-  text-decoration-color: #8234e9;
+  text-decoration-color: #8bf24e;
   text-underline-offset: 3px;
 
   &:hover {

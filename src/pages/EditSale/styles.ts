@@ -83,4 +83,6 @@ export const NewSaleBtn = styled.button`
   outline: none;
   border: none;
   border-radius: 0.8rem;
+  width: 100%;
+  margin-top: -1.4rem;
 `;
