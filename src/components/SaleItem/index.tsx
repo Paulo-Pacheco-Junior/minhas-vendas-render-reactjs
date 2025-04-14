@@ -28,12 +28,6 @@ export function SaleItem({ sale }: any) {
     }
   }
 
-  async function handleDeleteSale(id: string) {
-    if (user.employeeId === sale.user.employeeId) {
-      await api.delete(`sales/${id}`);
-    }
-  }
-
   const saleDate = sale.saleDate;
   const installationDate = sale.installationDate;
 

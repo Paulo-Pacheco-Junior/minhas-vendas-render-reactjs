@@ -107,3 +107,17 @@ export const AgentRoleButtons = styled.div`
     }
   }
 `;
+
+export const EmployeeIdInputs = styled.div`
+  input {
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    margin-right: 0.6rem;
+  }
+
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;

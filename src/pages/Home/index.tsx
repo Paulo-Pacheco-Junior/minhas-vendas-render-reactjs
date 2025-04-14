@@ -5,6 +5,7 @@ import {
   SalesCount,
   ScrollBtn,
   NewSaleBtn,
+  EmployeeIdInputs,
 } from "./styles";
 import api from "../../services/api";
 import { useContext, useEffect, useState } from "react";
@@ -37,6 +38,7 @@ interface Sale {
   employeeId: string;
   observation: string;
   user: User;
+  status: string;
 }
 
 export function Home() {
@@ -46,6 +48,9 @@ export function Home() {
   const [employeeIdArray, setEmployeeIdArray] = useState<string[]>([]);
 
   const [agentRole, setAgentRole] = useState("all");
+
+  const [employeeIdInput, setEmployeeIdInput] = useState("");
+  const [employeeIdFilterInput, setEmployeeIdFilterInput] = useState("");
 
   const [scrollState, setScrollState] = useState(0);
 
@@ -79,6 +84,69 @@ export function Home() {
     }
     handleGetSales();
   }, [sales]);
+
+  async function handleAddEmployeeId() {
+    if (
+      !employeeIdArray.includes(employeeIdInput) &&
+      employeeIdInput.trim() !== ""
+    ) {
+      const newArray = [employeeIdInput, ...employeeIdArray];
+      const jsonFormatted = `{"observation": ${JSON.stringify(newArray)}}`;
+
+      await api.put(`/sales/${1}`, {
+        userId: user.id,
+        cpfCnpj: "-",
+        region: "-",
+        ticket: "-",
+        callerIdPhone: "-",
+        phone: "-",
+        saleDate: new Date().toISOString(),
+        internetPlanSpeed: "-",
+        paymentMethod: "-",
+        internetType: "-",
+        installationDate: new Date().toISOString(),
+        installationShift: "-",
+        customerName: "-",
+        serviceOrder: "-",
+        extension: "-",
+        status: "Em_aprovisionamento",
+        observation: jsonFormatted,
+      });
+    }
+  }
+
+  async function handleDeleteEmployeeId() {
+    if (
+      employeeIdArray.includes(employeeIdFilterInput) &&
+      employeeIdFilterInput.trim() !== ""
+    ) {
+      const newArray = employeeIdArray.filter(
+        (item) => item !== employeeIdFilterInput
+      );
+
+      const jsonFormatted = `{"observation": ${JSON.stringify(newArray)}}`;
+
+      await api.put(`/sales/${1}`, {
+        userId: user.id,
+        cpfCnpj: "-",
+        region: "-",
+        ticket: "-",
+        callerIdPhone: "-",
+        phone: "-",
+        saleDate: new Date().toISOString(),
+        internetPlanSpeed: "-",
+        paymentMethod: "-",
+        internetType: "-",
+        installationDate: new Date().toISOString(),
+        installationShift: "-",
+        customerName: "-",
+        serviceOrder: "-",
+        extension: "-",
+        status: "Em_aprovisionamento",
+        observation: jsonFormatted,
+      });
+    }
+  }
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMonth(Number(e.target.value));
@@ -227,6 +295,59 @@ export function Home() {
     window.scrollTo({ top: scrollTo, behavior: "smooth" });
   }
 
+  const getSalesCountSeller = (
+    selectedMonth: number,
+    selectedDay: number | "all"
+  ) => {
+    const filteredSalesByMonthAndDay = sales.filter((sale) => {
+      const saleDate = new Date(sale.saleDate);
+
+      if (selectedDay === "all") {
+        return saleDate.getMonth() === selectedMonth;
+      }
+
+      return (
+        saleDate.getMonth() === selectedMonth &&
+        saleDate.getDate() === selectedDay
+      );
+    });
+
+    const salesFilteredInProgress = filteredSalesByMonthAndDay.filter(
+      (sale) => sale.status === "Em_aprovisionamento"
+    ).length;
+
+    const salesFilteredPending = filteredSalesByMonthAndDay.filter((sale) =>
+      [
+        "Em_aprovisionamento",
+        "Com_pendencia",
+        "Aguardando_pagamento",
+        "Pendencia_tecnica",
+        "Draft",
+        "Sem_slot",
+      ].includes(sale.status)
+    ).length;
+
+    const salesFilteredInstalled = filteredSalesByMonthAndDay.filter(
+      (sale) => sale.status === "Instalada"
+    ).length;
+
+    const salesFilteredCanceled = filteredSalesByMonthAndDay.filter(
+      (sale) => sale.status === "Cancelada"
+    ).length;
+
+    // Aqui você pode retornar os valores para usar onde quiser
+    return {
+      inProgress: salesFilteredInProgress,
+      pending: salesFilteredPending,
+      installed: salesFilteredInstalled,
+      canceled: salesFilteredCanceled,
+    };
+  };
+  const { inProgress, pending, installed, canceled } = getSalesCountSeller(
+    selectedMonth,
+    selectedDay
+  );
+
   return (
     <Container>
       <Header />
@@ -272,7 +393,36 @@ export function Home() {
           </AgentRoleButtons>
         </SalesFilter>
       )}
-
+      {/* {user.role === "seller" && (
+        <SalesFilter>
+          <AgentRoleButtons style={{ paddingRight: "25rem" }}>
+            <button
+              className={agentRole === "all" ? "selected" : ""}
+              onClick={handleRoleAll}
+            >
+              Em aprovisionamento ({inProgress})
+            </button>
+            <button
+              className={agentRole === "all" ? "selected" : ""}
+              onClick={handleRoleAll}
+            >
+              Instaladas ({installed})
+            </button>
+            <button
+              className={agentRole === "active" ? "selected" : ""}
+              onClick={handleRoleActive}
+            >
+              Pendentes ({pending})
+            </button>
+            <button
+              className={agentRole === "receptive" ? "selected" : ""}
+              onClick={handleRoleReceptive}
+            >
+              Canceladas ({canceled})
+            </button>
+          </AgentRoleButtons>
+        </SalesFilter>
+      )} */}
       <select value={selectedMonth} onChange={handleMonthChange}>
         <option value={0}>Janeiro</option>
         <option value={1}>Fevereiro</option>
@@ -287,7 +437,6 @@ export function Home() {
         <option value={10}>Novembro</option>
         <option value={11}>Dezembro</option>
       </select>
-
       <select
         value={selectedDay}
         onChange={handleDayChange}
@@ -454,6 +603,29 @@ export function Home() {
             Receptivos
           </button>
         </AgentRoleButtons>
+      )}
+
+      {user.role === "supervisor" && (
+        <EmployeeIdInputs>
+          <div>
+            <input
+              placeholder="Digite a BC"
+              onChange={(e) => setEmployeeIdInput(e.target.value)}
+            />
+            <button type="button" onClick={handleAddEmployeeId}>
+              Adicionar BC
+            </button>
+          </div>
+          <div>
+            <input
+              placeholder="Digite a BC"
+              onChange={(e) => setEmployeeIdFilterInput(e.target.value)}
+            />
+            <button type="button" onClick={handleDeleteEmployeeId}>
+              Excluir BC
+            </button>
+          </div>
+        </EmployeeIdInputs>
       )}
     </Container>
   );
