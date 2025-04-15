@@ -181,3 +181,47 @@ export const ModalButtons = styled.div`
     color: #192b1c;
   }
 `;
+
+export const ObservationModalButtons = styled.div`
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 4rem;
+  justify-content: space-around;
+
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.3rem;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 50%;
+  }
+
+  button:first-child {
+    background-color: transparent;
+    border: 1px solid white;
+    color: ${({ theme }) => theme.COLORS.GRAY_100};
+  }
+
+  button:last-child {
+    background-color: rgba(138, 242, 78, 0.59);
+    color: #192b1c;
+  }
+`;
+
+export const ObservationTextArea = styled.textarea`
+  height: 30rem;
+  width: 100%;
+  resize: vertical;
+`;
+
+export const ObservationModalBox = styled.div`
+  background-color: ${({ theme }) => theme.COLORS.BG_GRAY_900};
+  color: ${({ theme }) => theme.COLORS.GRAY_100};
+  padding: 3rem 2rem;
+  border-radius: 0.5rem;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+`;

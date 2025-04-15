@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import api from "../../services/api";
 import {
   Container,
@@ -11,6 +11,9 @@ import {
   ModalOverlay,
   ModalBox,
   ModalButtons,
+  ObservationModalButtons,
+  ObservationTextArea,
+  ObservationModalBox,
 } from "./styles";
 import { UserContext } from "../../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -77,6 +80,8 @@ export function SaleItem({ sale }: any) {
       status: sale.status,
       observation,
     });
+
+    setShowObservationModal(false);
     navigate("/");
   }
 
@@ -112,11 +117,45 @@ export function SaleItem({ sale }: any) {
     setShowModal(false);
   }
 
+  const [showObservationModal, setShowObservationModal] = useState(false);
+
+  function handleOpenObservationModal() {
+    setShowObservationModal(true);
+  }
+
+  function handleCloseObservationModal() {
+    setShowObservationModal(false);
+  }
+
   async function confirmDeleteSale(id: string) {
     await api.delete(`sales/${id}`);
     setShowModal(false);
     navigate("/");
   }
+
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto"; // ou ''
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showModal]);
+
+  useEffect(() => {
+    if (showObservationModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto"; // ou ''
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showObservationModal]);
 
   return (
     <>
@@ -125,6 +164,27 @@ export function SaleItem({ sale }: any) {
           onConfirm={() => confirmDeleteSale(sale.id)}
           onCancel={handleCloseModal}
         />
+      )}
+
+      {showObservationModal && (
+        <>
+          <ModalOverlay>
+            <ObservationModalBox>
+              <ObservationTextArea
+                value={observation}
+                onChange={(e) => setObservation(e.target.value)}
+              ></ObservationTextArea>
+              <ObservationModalButtons>
+                <button onClick={handleCloseObservationModal}>
+                  Sair sem salvar
+                </button>
+                <button onClick={() => handleChangeObservation(sale.id)}>
+                  Salvar
+                </button>
+              </ObservationModalButtons>
+            </ObservationModalBox>
+          </ModalOverlay>
+        </>
       )}
 
       <Container
@@ -238,6 +298,7 @@ export function SaleItem({ sale }: any) {
               <textarea
                 value={observation}
                 onChange={(e) => setObservation(e.target.value)}
+                onClick={handleOpenObservationModal}
               >
                 {sale.observation}
               </textarea>
