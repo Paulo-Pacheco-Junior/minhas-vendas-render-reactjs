@@ -87,10 +87,10 @@ export function Home() {
 
   async function handleAddEmployeeId() {
     if (
-      !employeeIdArray.includes(employeeIdInput) &&
-      employeeIdInput.trim() !== ""
+      !employeeIdArray.includes(employeeIdInput.toUpperCase()) &&
+      employeeIdInput.trim().toUpperCase() !== ""
     ) {
-      const newArray = [employeeIdInput, ...employeeIdArray];
+      const newArray = [employeeIdInput.toUpperCase(), ...employeeIdArray];
       const jsonFormatted = `{"observation": ${JSON.stringify(newArray)}}`;
 
       await api.put(`/sales/${1}`, {
@@ -113,15 +113,17 @@ export function Home() {
         observation: jsonFormatted,
       });
     }
+
+    setEmployeeIdInput("");
   }
 
   async function handleDeleteEmployeeId() {
     if (
-      employeeIdArray.includes(employeeIdFilterInput) &&
-      employeeIdFilterInput.trim() !== ""
+      employeeIdArray.includes(employeeIdFilterInput.toUpperCase()) &&
+      employeeIdFilterInput.trim().toUpperCase() !== ""
     ) {
       const newArray = employeeIdArray.filter(
-        (item) => item !== employeeIdFilterInput
+        (item) => item !== employeeIdFilterInput.toUpperCase()
       );
 
       const jsonFormatted = `{"observation": ${JSON.stringify(newArray)}}`;
@@ -145,7 +147,10 @@ export function Home() {
         status: "Em_aprovisionamento",
         observation: jsonFormatted,
       });
+
+      setEmployeeIdFilterInput("");
     }
+    setEmployeeIdFilterInput("");
   }
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -609,6 +614,7 @@ export function Home() {
         <EmployeeIdInputs>
           <div>
             <input
+              value={employeeIdInput}
               placeholder="Digite a BC"
               onChange={(e) => setEmployeeIdInput(e.target.value)}
             />
@@ -618,10 +624,15 @@ export function Home() {
           </div>
           <div>
             <input
+              value={employeeIdFilterInput}
               placeholder="Digite a BC"
               onChange={(e) => setEmployeeIdFilterInput(e.target.value)}
             />
-            <button type="button" onClick={handleDeleteEmployeeId}>
+            <button
+              type="button"
+              onClick={handleDeleteEmployeeId}
+              style={{ backgroundColor: "#c62828", color: "#daddcc" }}
+            >
               Excluir BC
             </button>
           </div>
