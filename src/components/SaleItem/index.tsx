@@ -174,14 +174,21 @@ export function SaleItem({ sale }: any) {
                 value={observation}
                 onChange={(e) => setObservation(e.target.value)}
               ></ObservationTextArea>
-              <ObservationModalButtons>
-                <button onClick={handleCloseObservationModal}>
-                  Sair sem salvar
-                </button>
-                <button onClick={() => handleChangeObservation(sale.id)}>
-                  Salvar
-                </button>
-              </ObservationModalButtons>
+              {user.role === "seller" && (
+                <ObservationModalButtons>
+                  <button onClick={handleCloseObservationModal}>
+                    Sair sem salvar
+                  </button>
+                  <button onClick={() => handleChangeObservation(sale.id)}>
+                    Salvar
+                  </button>
+                </ObservationModalButtons>
+              )}
+              {user.role === "supervisor" && (
+                <ObservationModalButtons>
+                  <button onClick={handleCloseObservationModal}>Sair</button>
+                </ObservationModalButtons>
+              )}
             </ObservationModalBox>
           </ModalOverlay>
         </>

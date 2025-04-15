@@ -141,7 +141,6 @@ export const ModalOverlay = styled.div`
 `;
 
 export const ModalBox = styled.div`
-  background-color: white;
   background-color: ${({ theme }) => theme.COLORS.BG_GRAY_900};
   color: ${({ theme }) => theme.COLORS.GRAY_100};
 
@@ -211,6 +210,7 @@ export const ObservationModalButtons = styled.div`
 `;
 
 export const ObservationTextArea = styled.textarea`
+  background-color: rgba(246, 246, 246, 0.9);
   height: 30rem;
   width: 100%;
   resize: vertical;
@@ -219,7 +219,7 @@ export const ObservationTextArea = styled.textarea`
 export const ObservationModalBox = styled.div`
   background-color: ${({ theme }) => theme.COLORS.BG_GRAY_900};
   color: ${({ theme }) => theme.COLORS.GRAY_100};
-  padding: 3rem 2rem;
+  padding: 2rem 2rem;
   border-radius: 0.5rem;
   width: 400px;
   text-align: center;
