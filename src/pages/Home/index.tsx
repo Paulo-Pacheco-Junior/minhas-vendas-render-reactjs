@@ -6,6 +6,8 @@ import {
   ScrollBtn,
   NewSaleBtn,
   EmployeeIdInputs,
+  SalesCountSellers,
+  SalesFilterSellers,
 } from "./styles";
 import api from "../../services/api";
 import { useContext, useEffect, useState } from "react";
@@ -55,9 +57,11 @@ export function Home() {
   const [scrollState, setScrollState] = useState(0);
 
   const [filteredSales, setFilteredSales] = useState<any[]>([]);
+
   const [selectedMonth, setSelectedMonth] = useState<number>(
     new Date().getMonth()
   );
+
   const [selectedDay, setSelectedDay] = useState<number | "all">("all");
 
   const token = JSON.parse(localStorage.getItem("@token") || "[]");
@@ -201,6 +205,26 @@ export function Home() {
     setAgentRole("receptive");
   }
 
+  function handleScroll() {
+    let newScrollState = 0;
+
+    if (scrollState === 0) {
+      newScrollState = 30;
+    } else if (scrollState === 30) {
+      newScrollState = 60;
+    } else if (scrollState === 60) {
+      newScrollState = 100;
+    } else if (scrollState === 100) {
+      newScrollState = 0;
+    }
+    setScrollState(newScrollState);
+
+    const scrollTo =
+      (newScrollState / 100) * document.documentElement.scrollHeight;
+
+    window.scrollTo({ top: scrollTo, behavior: "smooth" });
+  }
+
   const getSalesCount = (
     role: string,
     selectedMonth: number,
@@ -280,40 +304,20 @@ export function Home() {
     return count < 10 ? `0${count}` : count.toString();
   };
 
-  function handleScroll() {
-    let newScrollState = 0;
-
-    if (scrollState === 0) {
-      newScrollState = 30;
-    } else if (scrollState === 30) {
-      newScrollState = 60;
-    } else if (scrollState === 60) {
-      newScrollState = 100;
-    } else if (scrollState === 100) {
-      newScrollState = 0;
-    }
-    setScrollState(newScrollState);
-
-    const scrollTo =
-      (newScrollState / 100) * document.documentElement.scrollHeight;
-
-    window.scrollTo({ top: scrollTo, behavior: "smooth" });
-  }
-
   const getSalesCountSeller = (
     selectedMonth: number,
     selectedDay: number | "all"
   ) => {
     const filteredSalesByMonthAndDay = sales.filter((sale) => {
-      const saleDate = new Date(sale.saleDate);
+      const installationDate = new Date(sale.installationDate);
 
       if (selectedDay === "all") {
-        return saleDate.getMonth() === selectedMonth;
+        return installationDate.getMonth() === selectedMonth;
       }
 
       return (
-        saleDate.getMonth() === selectedMonth &&
-        saleDate.getDate() === selectedDay
+        installationDate.getMonth() === selectedMonth &&
+        installationDate.getDate() === selectedDay
       );
     });
 
@@ -323,7 +327,6 @@ export function Home() {
 
     const salesFilteredPending = filteredSalesByMonthAndDay.filter((sale) =>
       [
-        "Em_aprovisionamento",
         "Com_pendencia",
         "Aguardando_pagamento",
         "Pendencia_tecnica",
@@ -340,7 +343,6 @@ export function Home() {
       (sale) => sale.status === "Cancelada"
     ).length;
 
-    // Aqui você pode retornar os valores para usar onde quiser
     return {
       inProgress: salesFilteredInProgress,
       pending: salesFilteredPending,
@@ -348,6 +350,7 @@ export function Home() {
       canceled: salesFilteredCanceled,
     };
   };
+
   const { inProgress, pending, installed, canceled } = getSalesCountSeller(
     selectedMonth,
     selectedDay
@@ -356,9 +359,11 @@ export function Home() {
   return (
     <Container>
       <Header />
+
       <div>
         <ImportantLinks />
       </div>
+
       {user.role === "supervisor" ? (
         <ScrollBtn onClick={handleScroll}>
           {scrollState === 100 ? (
@@ -370,12 +375,33 @@ export function Home() {
       ) : (
         <NewSaleBtn to="/new-sale">+ Nova Venda</NewSaleBtn>
       )}
+
+      {user.role === "seller" && (
+        <SalesFilterSellers>
+          <SalesCountSellers>
+            <p>
+              Em Aprovisionamento: <span>{inProgress}</span>
+            </p>
+            <p>
+              Instaladas: <span>{installed}</span>
+            </p>
+            <p>
+              Pendentes: <span>{pending}</span>
+            </p>
+            <p>
+              Canceladas: <span>{canceled}</span>
+            </p>
+          </SalesCountSellers>
+        </SalesFilterSellers>
+      )}
+
       {user.role === "supervisor" && (
         <SalesFilter>
           <SalesCount>
             <strong>Total de Vendas: </strong>
             <span>{getSalesCount(agentRole, selectedMonth, selectedDay)}</span>
           </SalesCount>
+
           <AgentRoleButtons style={{ paddingRight: "25rem" }}>
             <button
               className={agentRole === "all" ? "selected" : ""}
@@ -398,36 +424,7 @@ export function Home() {
           </AgentRoleButtons>
         </SalesFilter>
       )}
-      {/* {user.role === "seller" && (
-        <SalesFilter>
-          <AgentRoleButtons style={{ paddingRight: "25rem" }}>
-            <button
-              className={agentRole === "all" ? "selected" : ""}
-              onClick={handleRoleAll}
-            >
-              Em aprovisionamento ({inProgress})
-            </button>
-            <button
-              className={agentRole === "all" ? "selected" : ""}
-              onClick={handleRoleAll}
-            >
-              Instaladas ({installed})
-            </button>
-            <button
-              className={agentRole === "active" ? "selected" : ""}
-              onClick={handleRoleActive}
-            >
-              Pendentes ({pending})
-            </button>
-            <button
-              className={agentRole === "receptive" ? "selected" : ""}
-              onClick={handleRoleReceptive}
-            >
-              Canceladas ({canceled})
-            </button>
-          </AgentRoleButtons>
-        </SalesFilter>
-      )} */}
+
       <select value={selectedMonth} onChange={handleMonthChange}>
         <option value={0}>Janeiro</option>
         <option value={1}>Fevereiro</option>
@@ -442,6 +439,7 @@ export function Home() {
         <option value={10}>Novembro</option>
         <option value={11}>Dezembro</option>
       </select>
+
       <select
         value={selectedDay}
         onChange={handleDayChange}
@@ -480,6 +478,7 @@ export function Home() {
         <option value={30}>30</option>
         <option value={31}>31</option>
       </select>
+
       <main>
         <ul>
           {agentRole === "all" &&
@@ -587,6 +586,7 @@ export function Home() {
             })}
         </ul>
       </main>
+
       {user.role === "supervisor" && (
         <AgentRoleButtons style={{ marginBottom: "3rem" }}>
           <button
