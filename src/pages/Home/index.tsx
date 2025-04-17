@@ -1,8 +1,5 @@
 import {
   Container,
-  AgentRoleButtons,
-  SalesFilter,
-  SalesCount,
   ScrollBtn,
   NewSaleBtn,
   EmployeeIdInputs,
@@ -49,8 +46,6 @@ export function Home() {
   const [sales, setSales] = useState<Sale[]>([]);
   const [employeeIdArray, setEmployeeIdArray] = useState<string[]>([]);
 
-  const [agentRole, setAgentRole] = useState("all");
-
   const [employeeIdInput, setEmployeeIdInput] = useState("");
   const [employeeIdFilterInput, setEmployeeIdFilterInput] = useState("");
 
@@ -63,6 +58,7 @@ export function Home() {
   );
 
   const [selectedDay, setSelectedDay] = useState<number | "all">("all");
+  const [selectedStatus, setSelectedStatus] = useState<string | "all">("all");
 
   const token = JSON.parse(localStorage.getItem("@token") || "[]");
 
@@ -165,6 +161,12 @@ export function Home() {
     setSelectedDay(e.target.value === "all" ? "all" : Number(e.target.value));
   };
 
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedStatus(
+      e.target.value === "all" ? "all" : String(e.target.value)
+    );
+  };
+
   useEffect(() => {
     const salesFiltered = sales.filter((sale) => {
       if (user.role === "seller") {
@@ -193,18 +195,6 @@ export function Home() {
     setFilteredSales(salesFiltered);
   }, [sales, selectedMonth, selectedDay]);
 
-  function handleRoleAll() {
-    setAgentRole("all");
-  }
-
-  function handleRoleActive() {
-    setAgentRole("active");
-  }
-
-  function handleRoleReceptive() {
-    setAgentRole("receptive");
-  }
-
   function handleScroll() {
     let newScrollState = 0;
 
@@ -225,51 +215,10 @@ export function Home() {
     window.scrollTo({ top: scrollTo, behavior: "smooth" });
   }
 
-  const getSalesCount = (
-    role: string,
+  const getSalesCountSupervisor = (
     selectedMonth: number,
     selectedDay: number | "all"
   ) => {
-    let count = 0;
-
-    const allowedEmployeeIdsAll = employeeIdArray;
-
-    const allowedEmployeeIdsActive = [
-      "BC762174",
-      "BC763168",
-      "BC763169",
-      "BC769445",
-      "BC769454",
-      "BC777180",
-      "BC777190",
-      "BC777739",
-      "BC789568",
-      "BC789581",
-      "BC789994",
-      "BC789995",
-      "BC790415",
-      "BC792265",
-      "BC792302",
-      "BC793865",
-      "BC762541",
-      "BC788129",
-      "BC794166",
-    ];
-
-    const allowedEmployeeIdsReceptive = [
-      "BC795371",
-      "BC794633",
-      "BC762199",
-      "BC714145",
-      "BC762104",
-      "BC762175",
-      "BC770607",
-      "BC770702",
-      "BC778472",
-      "BC785551",
-      "BC792075",
-    ];
-
     const filteredSalesByMonthAndDay = sales.filter((sale) => {
       const saleDate = new Date(sale.saleDate);
 
@@ -283,26 +232,41 @@ export function Home() {
       );
     });
 
-    if (role === "all") {
-      count = filteredSalesByMonthAndDay.filter((sale) =>
-        allowedEmployeeIdsAll.includes(sale.user.employeeId.toUpperCase())
-      ).length;
-    }
+    const salesFilteredInProgress = filteredSalesByMonthAndDay.filter(
+      (sale) => sale.status === "Em_aprovisionamento"
+    ).length;
 
-    if (role === "active") {
-      count = filteredSalesByMonthAndDay.filter((sale) =>
-        allowedEmployeeIdsActive.includes(sale.user.employeeId.toUpperCase())
-      ).length;
-    }
+    const salesFilteredPending = filteredSalesByMonthAndDay.filter((sale) =>
+      [
+        "Com_pendencia",
+        "Aguardando_pagamento",
+        "Pendencia_tecnica",
+        "Draft",
+        "Sem_slot",
+      ].includes(sale.status)
+    ).length;
 
-    if (role === "receptive") {
-      count = filteredSalesByMonthAndDay.filter((sale) =>
-        allowedEmployeeIdsReceptive.includes(sale.user.employeeId.toUpperCase())
-      ).length;
-    }
+    const salesFilteredInstalled = filteredSalesByMonthAndDay.filter(
+      (sale) => sale.status === "Instalada"
+    ).length;
 
-    return count < 10 ? `0${count}` : count.toString();
+    const salesFilteredCanceled = filteredSalesByMonthAndDay.filter(
+      (sale) => sale.status === "Cancelada"
+    ).length;
+
+    const salesTotal = filteredSalesByMonthAndDay.length;
+
+    return {
+      inProgress: salesFilteredInProgress,
+      pending: salesFilteredPending,
+      installed: salesFilteredInstalled,
+      canceled: salesFilteredCanceled,
+      total: salesTotal,
+    };
   };
+
+  const { inProgress, pending, installed, canceled, total } =
+    getSalesCountSupervisor(selectedMonth, selectedDay);
 
   const getSalesCountSeller = (
     selectedMonth: number,
@@ -343,27 +307,39 @@ export function Home() {
       (sale) => sale.status === "Cancelada"
     ).length;
 
+    const salesTotal = filteredSalesByMonthAndDay.length;
+
     return {
-      inProgress: salesFilteredInProgress,
-      pending: salesFilteredPending,
-      installed: salesFilteredInstalled,
-      canceled: salesFilteredCanceled,
+      installationInProgress: salesFilteredInProgress,
+      installationPending: salesFilteredPending,
+      installationInstalled: salesFilteredInstalled,
+      installationCanceled: salesFilteredCanceled,
+      installationTotal: salesTotal,
     };
   };
 
-  const { inProgress, pending, installed, canceled } = getSalesCountSeller(
-    selectedMonth,
-    selectedDay
-  );
+  const {
+    installationInProgress,
+    installationPending,
+    installationInstalled,
+    installationCanceled,
+    installationTotal,
+  } = getSalesCountSeller(selectedMonth, selectedDay);
+
+  const pendingStatuses = [
+    "Com_pendencia",
+    "Aguardando_pagamento",
+    "Pendencia_tecnica",
+    "Draft",
+    "Sem_slot",
+  ];
 
   return (
     <Container>
       <Header />
-
       <div>
         <ImportantLinks />
       </div>
-
       {user.role === "supervisor" ? (
         <ScrollBtn onClick={handleScroll}>
           {scrollState === 100 ? (
@@ -375,8 +351,28 @@ export function Home() {
       ) : (
         <NewSaleBtn to="/new-sale">+ Nova Venda</NewSaleBtn>
       )}
-
       {user.role === "seller" && (
+        <SalesFilterSellers>
+          <SalesCountSellers>
+            <p>
+              Em Aprovisionamento: <span>{installationInProgress}</span>
+            </p>
+            <p>
+              Instaladas: <span>{installationInstalled}</span>
+            </p>
+            <p>
+              Pendentes: <span>{installationPending}</span>
+            </p>
+            <p>
+              Canceladas: <span>{installationCanceled}</span>
+            </p>
+            <p>
+              Total: <span>{installationTotal}</span>
+            </p>
+          </SalesCountSellers>
+        </SalesFilterSellers>
+      )}
+      {user.role === "supervisor" && (
         <SalesFilterSellers>
           <SalesCountSellers>
             <p>
@@ -391,38 +387,11 @@ export function Home() {
             <p>
               Canceladas: <span>{canceled}</span>
             </p>
+            <p>
+              Total: <span>{total}</span>
+            </p>
           </SalesCountSellers>
         </SalesFilterSellers>
-      )}
-
-      {user.role === "supervisor" && (
-        <SalesFilter>
-          <SalesCount>
-            <strong>Total de Vendas: </strong>
-            <span>{getSalesCount(agentRole, selectedMonth, selectedDay)}</span>
-          </SalesCount>
-
-          <AgentRoleButtons style={{ paddingRight: "25rem" }}>
-            <button
-              className={agentRole === "all" ? "selected" : ""}
-              onClick={handleRoleAll}
-            >
-              Todos
-            </button>
-            <button
-              className={agentRole === "active" ? "selected" : ""}
-              onClick={handleRoleActive}
-            >
-              Ativos
-            </button>
-            <button
-              className={agentRole === "receptive" ? "selected" : ""}
-              onClick={handleRoleReceptive}
-            >
-              Receptivos
-            </button>
-          </AgentRoleButtons>
-        </SalesFilter>
       )}
 
       <select value={selectedMonth} onChange={handleMonthChange}>
@@ -439,7 +408,6 @@ export function Home() {
         <option value={10}>Novembro</option>
         <option value={11}>Dezembro</option>
       </select>
-
       <select
         value={selectedDay}
         onChange={handleDayChange}
@@ -479,137 +447,55 @@ export function Home() {
         <option value={31}>31</option>
       </select>
 
+      <select value={selectedStatus} onChange={handleStatusChange}>
+        <option value={"all"}>Todas</option>
+        <option value={"inProgress"}>Em aprovisionamento</option>
+        <option value={"installed"}>Instaladas</option>
+        <option value={"pending"}>Pendentes</option>
+        <option value={"canceled"}>Canceladas</option>
+      </select>
+
       <main>
         <ul>
-          {agentRole === "all" &&
-          (sales.length === 0 ||
-            (user.role === "seller" &&
-              !sales.some((sale) => sale.userId === user.id))) ? (
+          {(user.role === "supervisor" && sales.length === 0) ||
+          (user.role === "seller" &&
+            !sales.some((sale) => sale.userId === user.id)) ? (
             <p>Nenhuma venda encontrada.</p>
           ) : (
-            filteredSales.map((sale) => {
-              const isEmployeeAllowed = employeeIdArray.includes(
-                sale.user.employeeId
-              );
+            filteredSales
+              .filter((sale) => {
+                if (selectedStatus === "all") {
+                  return sale;
+                } else if (selectedStatus === "inProgress") {
+                  return sale.status === "Em_aprovisionamento";
+                } else if (selectedStatus === "installed") {
+                  return sale.status === "Instalada";
+                } else if (selectedStatus === "pending") {
+                  return pendingStatuses.includes(sale.status);
+                } else if (selectedStatus === "canceled") {
+                  return sale.status === "Cancelada";
+                }
+                return "all";
+              })
+              .map((sale) => {
+                const isEmployeeAllowed = employeeIdArray.includes(
+                  sale.user.employeeId
+                );
 
-              const isSellerRole =
-                user.role === "seller" && sale.userId === user.id;
+                const isSellerRole =
+                  user.role === "seller" && sale.userId === user.id;
 
-              if (
-                (user.role === "supervisor" && isEmployeeAllowed) ||
-                isSellerRole
-              ) {
-                return <SaleItem key={sale.id} sale={sale} />;
-              }
-              return null;
-            })
+                if (
+                  (user.role === "supervisor" && isEmployeeAllowed) ||
+                  isSellerRole
+                ) {
+                  return <SaleItem key={sale.id} sale={sale} />;
+                }
+                return null;
+              })
           )}
-
-          {agentRole === "active" &&
-            sales.map((sale) => {
-              if (
-                user.role === "supervisor" &&
-                (sale.user.employeeId.toLowerCase() ===
-                  "BC762174".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC763168".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC763169".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC769445".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC769454".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC777180".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC777190".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC777739".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC789568".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC789581".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC789994".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC789995".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC790415".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC792265".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC792302".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC793865".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC762541".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC788129".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC794166".toLowerCase())
-              ) {
-                return <SaleItem key={sale.id} sale={sale} />;
-              }
-              return null;
-            })}
-
-          {agentRole === "receptive" &&
-            sales.map((sale) => {
-              if (
-                user.role === "supervisor" &&
-                (sale.user.employeeId.toLowerCase() ===
-                  "BC795371".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC794633".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC762199".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC714145".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC762104".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC762175".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC770607".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC770702".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC778472".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC785551".toLowerCase() ||
-                  sale.user.employeeId.toLowerCase() ===
-                    "BC792075".toLowerCase())
-              ) {
-                return <SaleItem key={sale.id} sale={sale} />;
-              }
-              return null;
-            })}
         </ul>
       </main>
-
-      {user.role === "supervisor" && (
-        <AgentRoleButtons style={{ marginBottom: "3rem" }}>
-          <button
-            className={agentRole === "all" ? "selected" : ""}
-            onClick={handleRoleAll}
-          >
-            Todos
-          </button>
-          <button
-            className={agentRole === "active" ? "selected" : ""}
-            onClick={handleRoleActive}
-          >
-            Ativos
-          </button>
-          <button
-            className={agentRole === "receptive" ? "selected" : ""}
-            onClick={handleRoleReceptive}
-          >
-            Receptivos
-          </button>
-        </AgentRoleButtons>
-      )}
-
       {user.role === "supervisor" && (
         <EmployeeIdInputs>
           <div>

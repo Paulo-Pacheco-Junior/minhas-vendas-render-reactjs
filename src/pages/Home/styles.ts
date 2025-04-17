@@ -144,6 +144,8 @@ export const EmployeeIdInputs = styled.div`
   justify-content: center;
   align-items: flex-start;
   margin-bottom: 2rem;
+  margin-top: 6rem;
+  padding-left: 4rem;
 
   div {
     display: flex;
