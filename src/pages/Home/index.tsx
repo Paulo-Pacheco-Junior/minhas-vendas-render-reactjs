@@ -1,11 +1,4 @@
-import {
-  Container,
-  ScrollBtn,
-  NewSaleBtn,
-  EmployeeIdInputs,
-  SalesCountSellers,
-  SalesFilterSellers,
-} from "./styles";
+import { Container, ScrollBtn, NewSaleBtn } from "./styles";
 import api from "../../services/api";
 import { useContext, useEffect, useState } from "react";
 import { SaleItem } from "../../components/SaleItem";
@@ -13,6 +6,9 @@ import { Header } from "../../components/Header";
 import { UserContext } from "../../contexts/UserContext";
 import { ImportantLinks } from "../../components/ImportantLinks";
 import { RiArrowDownDoubleFill, RiArrowUpDoubleFill } from "react-icons/ri";
+import { SalesFilters } from "../../components/SalesFilters";
+import { SalesSummary } from "../../components/SalesSummary";
+import { EmployeeIdManager } from "../../components/EmployeeIdManager";
 
 interface User {
   name: string;
@@ -44,6 +40,8 @@ export function Home() {
   const { user } = useContext(UserContext);
 
   const [sales, setSales] = useState<Sale[]>([]);
+  const [filteredSales, setFilteredSales] = useState<any[]>([]);
+
   const [employeeIdArray, setEmployeeIdArray] = useState<string[]>([]);
 
   const [employeeIdInput, setEmployeeIdInput] = useState("");
@@ -51,13 +49,10 @@ export function Home() {
 
   const [scrollState, setScrollState] = useState(0);
 
-  const [filteredSales, setFilteredSales] = useState<any[]>([]);
-
+  const [selectedDay, setSelectedDay] = useState<number | "all">("all");
   const [selectedMonth, setSelectedMonth] = useState<number>(
     new Date().getMonth()
   );
-
-  const [selectedDay, setSelectedDay] = useState<number | "all">("all");
   const [selectedStatus, setSelectedStatus] = useState<string | "all">("all");
 
   const token = JSON.parse(localStorage.getItem("@token") || "[]");
@@ -85,116 +80,6 @@ export function Home() {
     handleGetSales();
   }, [sales]);
 
-  async function handleAddEmployeeId() {
-    if (
-      !employeeIdArray.includes(employeeIdInput.toUpperCase()) &&
-      employeeIdInput.trim().toUpperCase() !== ""
-    ) {
-      const newArray = [employeeIdInput.toUpperCase(), ...employeeIdArray];
-      const jsonFormatted = `{"observation": ${JSON.stringify(newArray)}}`;
-
-      await api.put(`/sales/${1}`, {
-        userId: user.id,
-        cpfCnpj: "-",
-        region: "-",
-        ticket: "-",
-        callerIdPhone: "-",
-        phone: "-",
-        saleDate: new Date().toISOString(),
-        internetPlanSpeed: "-",
-        paymentMethod: "-",
-        internetType: "-",
-        installationDate: new Date().toISOString(),
-        installationShift: "-",
-        customerName: "-",
-        serviceOrder: "-",
-        extension: "-",
-        status: "Em_aprovisionamento",
-        observation: jsonFormatted,
-      });
-    }
-
-    setEmployeeIdInput("");
-  }
-
-  async function handleDeleteEmployeeId() {
-    if (
-      employeeIdArray.includes(employeeIdFilterInput.toUpperCase()) &&
-      employeeIdFilterInput.trim().toUpperCase() !== ""
-    ) {
-      const newArray = employeeIdArray.filter(
-        (item) => item !== employeeIdFilterInput.toUpperCase()
-      );
-
-      const jsonFormatted = `{"observation": ${JSON.stringify(newArray)}}`;
-
-      await api.put(`/sales/${1}`, {
-        userId: user.id,
-        cpfCnpj: "-",
-        region: "-",
-        ticket: "-",
-        callerIdPhone: "-",
-        phone: "-",
-        saleDate: new Date().toISOString(),
-        internetPlanSpeed: "-",
-        paymentMethod: "-",
-        internetType: "-",
-        installationDate: new Date().toISOString(),
-        installationShift: "-",
-        customerName: "-",
-        serviceOrder: "-",
-        extension: "-",
-        status: "Em_aprovisionamento",
-        observation: jsonFormatted,
-      });
-
-      setEmployeeIdFilterInput("");
-    }
-    setEmployeeIdFilterInput("");
-  }
-
-  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedMonth(Number(e.target.value));
-  };
-
-  const handleDayChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedDay(e.target.value === "all" ? "all" : Number(e.target.value));
-  };
-
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedStatus(
-      e.target.value === "all" ? "all" : String(e.target.value)
-    );
-  };
-
-  useEffect(() => {
-    const salesFiltered = sales.filter((sale) => {
-      if (user.role === "seller") {
-        const intallationDate = new Date(sale.installationDate);
-
-        if (selectedDay === "all") {
-          return intallationDate.getMonth() === selectedMonth;
-        }
-        return (
-          intallationDate.getMonth() === selectedMonth &&
-          intallationDate.getDate() === selectedDay
-        );
-      } else {
-        const saleDate = new Date(sale.saleDate);
-
-        if (selectedDay === "all") {
-          return saleDate.getMonth() === selectedMonth;
-        }
-        return (
-          saleDate.getMonth() === selectedMonth &&
-          saleDate.getDate() === selectedDay
-        );
-      }
-    });
-
-    setFilteredSales(salesFiltered);
-  }, [sales, selectedMonth, selectedDay]);
-
   function handleScroll() {
     let newScrollState = 0;
 
@@ -215,12 +100,30 @@ export function Home() {
     window.scrollTo({ top: scrollTo, behavior: "smooth" });
   }
 
+  const onDayChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedDay(e.target.value === "all" ? "all" : Number(e.target.value));
+  };
+
+  const onMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedMonth(Number(e.target.value));
+  };
+
+  const onStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedStatus(
+      e.target.value === "all" ? "all" : String(e.target.value)
+    );
+  };
+
   const getSalesCountSupervisor = (
     selectedMonth: number,
     selectedDay: number | "all"
   ) => {
     const filteredSalesByMonthAndDay = sales.filter((sale) => {
       const saleDate = new Date(sale.saleDate);
+
+      const isEmployeeAllowed = employeeIdArray.includes(sale.user.employeeId);
+
+      if (!isEmployeeAllowed) return false;
 
       if (selectedDay === "all") {
         return saleDate.getMonth() === selectedMonth;
@@ -326,6 +229,74 @@ export function Home() {
     installationTotal,
   } = getSalesCountSeller(selectedMonth, selectedDay);
 
+  async function handleAddEmployeeId() {
+    if (
+      !employeeIdArray.includes(employeeIdInput.toUpperCase()) &&
+      employeeIdInput.trim().toUpperCase() !== ""
+    ) {
+      const newArray = [employeeIdInput.toUpperCase(), ...employeeIdArray];
+      const jsonFormatted = `{"observation": ${JSON.stringify(newArray)}}`;
+
+      await api.put(`/sales/${1}`, {
+        userId: user.id,
+        cpfCnpj: "-",
+        region: "-",
+        ticket: "-",
+        callerIdPhone: "-",
+        phone: "-",
+        saleDate: new Date().toISOString(),
+        internetPlanSpeed: "-",
+        paymentMethod: "-",
+        internetType: "-",
+        installationDate: new Date().toISOString(),
+        installationShift: "-",
+        customerName: "-",
+        serviceOrder: "-",
+        extension: "-",
+        status: "Em_aprovisionamento",
+        observation: jsonFormatted,
+      });
+    }
+
+    setEmployeeIdInput("");
+  }
+
+  async function handleDeleteEmployeeId() {
+    if (
+      employeeIdArray.includes(employeeIdFilterInput.toUpperCase()) &&
+      employeeIdFilterInput.trim().toUpperCase() !== ""
+    ) {
+      const newArray = employeeIdArray.filter(
+        (item) => item !== employeeIdFilterInput.toUpperCase()
+      );
+
+      const jsonFormatted = `{"observation": ${JSON.stringify(newArray)}}`;
+
+      await api.put(`/sales/${1}`, {
+        userId: user.id,
+        cpfCnpj: "-",
+        region: "-",
+        ticket: "-",
+        callerIdPhone: "-",
+        phone: "-",
+        saleDate: new Date().toISOString(),
+        internetPlanSpeed: "-",
+        paymentMethod: "-",
+        internetType: "-",
+        installationDate: new Date().toISOString(),
+        installationShift: "-",
+        customerName: "-",
+        serviceOrder: "-",
+        extension: "-",
+        status: "Em_aprovisionamento",
+        observation: jsonFormatted,
+      });
+
+      setEmployeeIdFilterInput("");
+    }
+    setEmployeeIdFilterInput("");
+  }
+
   const pendingStatuses = [
     "Com_pendencia",
     "Aguardando_pagamento",
@@ -333,6 +304,34 @@ export function Home() {
     "Draft",
     "Sem_slot",
   ];
+
+  useEffect(() => {
+    const salesFiltered = sales.filter((sale) => {
+      if (user.role === "seller") {
+        const installationDate = new Date(sale.installationDate);
+
+        if (selectedDay === "all") {
+          return installationDate.getMonth() === selectedMonth;
+        }
+        return (
+          installationDate.getMonth() === selectedMonth &&
+          installationDate.getDate() === selectedDay
+        );
+      } else {
+        const saleDate = new Date(sale.saleDate);
+
+        if (selectedDay === "all") {
+          return saleDate.getMonth() === selectedMonth;
+        }
+        return (
+          saleDate.getMonth() === selectedMonth &&
+          saleDate.getDate() === selectedDay
+        );
+      }
+    });
+
+    setFilteredSales(salesFiltered);
+  }, [sales, selectedDay, selectedMonth]);
 
   return (
     <Container>
@@ -351,109 +350,35 @@ export function Home() {
       ) : (
         <NewSaleBtn to="/new-sale">+ Nova Venda</NewSaleBtn>
       )}
+
       {user.role === "seller" && (
-        <SalesFilterSellers>
-          <SalesCountSellers>
-            <p>
-              Em Aprovisionamento: <span>{installationInProgress}</span>
-            </p>
-            <p>
-              Instaladas: <span>{installationInstalled}</span>
-            </p>
-            <p>
-              Pendentes: <span>{installationPending}</span>
-            </p>
-            <p>
-              Canceladas: <span>{installationCanceled}</span>
-            </p>
-            <p>
-              Total: <span>{installationTotal}</span>
-            </p>
-          </SalesCountSellers>
-        </SalesFilterSellers>
+        <SalesSummary
+          inProgress={installationInProgress}
+          installed={installationInstalled}
+          pending={installationPending}
+          canceled={installationCanceled}
+          total={installationTotal}
+        />
       )}
+
       {user.role === "supervisor" && (
-        <SalesFilterSellers>
-          <SalesCountSellers>
-            <p>
-              Em Aprovisionamento: <span>{inProgress}</span>
-            </p>
-            <p>
-              Instaladas: <span>{installed}</span>
-            </p>
-            <p>
-              Pendentes: <span>{pending}</span>
-            </p>
-            <p>
-              Canceladas: <span>{canceled}</span>
-            </p>
-            <p>
-              Total: <span>{total}</span>
-            </p>
-          </SalesCountSellers>
-        </SalesFilterSellers>
+        <SalesSummary
+          inProgress={inProgress}
+          installed={installed}
+          pending={pending}
+          canceled={canceled}
+          total={total}
+        />
       )}
 
-      <select value={selectedMonth} onChange={handleMonthChange}>
-        <option value={0}>Janeiro</option>
-        <option value={1}>Fevereiro</option>
-        <option value={2}>Março</option>
-        <option value={3}>Abril</option>
-        <option value={4}>Maio</option>
-        <option value={5}>Junho</option>
-        <option value={6}>Julho</option>
-        <option value={7}>Agosto</option>
-        <option value={8}>Setembro</option>
-        <option value={9}>Outubro</option>
-        <option value={10}>Novembro</option>
-        <option value={11}>Dezembro</option>
-      </select>
-      <select
-        value={selectedDay}
-        onChange={handleDayChange}
-        style={{ marginLeft: "0.2rem" }}
-      >
-        <option value={"all"}>Todos</option>
-        <option value={1}>1</option>
-        <option value={2}>2</option>
-        <option value={3}>3</option>
-        <option value={4}>4</option>
-        <option value={5}>5</option>
-        <option value={6}>6</option>
-        <option value={7}>7</option>
-        <option value={8}>8</option>
-        <option value={9}>9</option>
-        <option value={10}>10</option>
-        <option value={11}>11</option>
-        <option value={12}>12</option>
-        <option value={13}>13</option>
-        <option value={14}>14</option>
-        <option value={15}>15</option>
-        <option value={16}>16</option>
-        <option value={17}>17</option>
-        <option value={18}>18</option>
-        <option value={19}>19</option>
-        <option value={20}>20</option>
-        <option value={21}>21</option>
-        <option value={22}>22</option>
-        <option value={23}>23</option>
-        <option value={24}>24</option>
-        <option value={25}>25</option>
-        <option value={26}>26</option>
-        <option value={27}>27</option>
-        <option value={28}>28</option>
-        <option value={29}>29</option>
-        <option value={30}>30</option>
-        <option value={31}>31</option>
-      </select>
-
-      <select value={selectedStatus} onChange={handleStatusChange}>
-        <option value={"all"}>Todas</option>
-        <option value={"inProgress"}>Em aprovisionamento</option>
-        <option value={"installed"}>Instaladas</option>
-        <option value={"pending"}>Pendentes</option>
-        <option value={"canceled"}>Canceladas</option>
-      </select>
+      <SalesFilters
+        selectedMonth={selectedMonth}
+        selectedDay={selectedDay}
+        selectedStatus={selectedStatus}
+        onMonthChange={onMonthChange}
+        onDayChange={onDayChange}
+        onStatusChange={onStatusChange}
+      />
 
       <main>
         <ul>
@@ -497,32 +422,14 @@ export function Home() {
         </ul>
       </main>
       {user.role === "supervisor" && (
-        <EmployeeIdInputs>
-          <div>
-            <input
-              value={employeeIdInput}
-              placeholder="Digite a BC"
-              onChange={(e) => setEmployeeIdInput(e.target.value)}
-            />
-            <button type="button" onClick={handleAddEmployeeId}>
-              Adicionar BC
-            </button>
-          </div>
-          <div>
-            <input
-              value={employeeIdFilterInput}
-              placeholder="Digite a BC"
-              onChange={(e) => setEmployeeIdFilterInput(e.target.value)}
-            />
-            <button
-              type="button"
-              onClick={handleDeleteEmployeeId}
-              style={{ backgroundColor: "#c62828", color: "#daddcc" }}
-            >
-              Excluir BC
-            </button>
-          </div>
-        </EmployeeIdInputs>
+        <EmployeeIdManager
+          handleAddEmployeeId={handleAddEmployeeId}
+          handleDeleteEmployeeId={handleDeleteEmployeeId}
+          employeeIdInput={employeeIdInput}
+          setEmployeeIdInput={setEmployeeIdInput}
+          employeeIdFilterInput={employeeIdFilterInput}
+          setEmployeeIdFilterInput={setEmployeeIdFilterInput}
+        />
       )}
     </Container>
   );
