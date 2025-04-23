@@ -5,10 +5,14 @@ interface SalesFiltersProps {
   selectedDay: number | "all";
   selectedStatus: string | "all";
   selectedCustomer: string | "all";
+  selectedEmployeeId: string | "all";
+  employeeIdArray: string[];
+  userRole: string;
   onMonthChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onDayChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onStatusChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onCustomerChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onEmployeeIdChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 export function SalesFilters({
@@ -16,10 +20,14 @@ export function SalesFilters({
   selectedDay,
   selectedStatus,
   selectedCustomer,
+  selectedEmployeeId,
   onMonthChange,
   onDayChange,
   onStatusChange,
   onCustomerChange,
+  onEmployeeIdChange,
+  employeeIdArray,
+  userRole,
 }: SalesFiltersProps) {
   return (
     <Container>
@@ -78,6 +86,21 @@ export function SalesFilters({
         <option value="home">Residencial</option>
         <option value="business">Empresarial</option>
       </select>
+
+      {userRole === "supervisor" && (
+        <select
+          value={selectedEmployeeId}
+          onChange={onEmployeeIdChange}
+          style={{ marginLeft: "0.5rem" }}
+        >
+          <option value="all">Todos os agentes</option>
+          {employeeIdArray.map((id) => (
+            <option key={id} value={id}>
+              {id}
+            </option>
+          ))}
+        </select>
+      )}
     </Container>
   );
 }

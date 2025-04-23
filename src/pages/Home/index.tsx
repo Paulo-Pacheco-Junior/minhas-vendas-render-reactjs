@@ -57,6 +57,9 @@ export function Home() {
   const [selectedCustomer, setSelectedCustomer] = useState<string | "all">(
     "all"
   );
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | "all">(
+    "all"
+  );
 
   const token = JSON.parse(localStorage.getItem("@token") || "[]");
 
@@ -121,6 +124,10 @@ export function Home() {
     setSelectedCustomer(
       e.target.value === "all" ? "all" : String(e.target.value)
     );
+  };
+
+  const onEmployeeIdChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedEmployeeId(e.target.value === "all" ? "all" : e.target.value);
   };
 
   const getSalesCountSupervisor = (
@@ -300,7 +307,6 @@ export function Home() {
         status: "Em_aprovisionamento",
         observation: jsonFormatted,
       });
-
       setEmployeeIdFilterInput("");
     }
     setEmployeeIdFilterInput("");
@@ -344,6 +350,14 @@ export function Home() {
 
   useEffect(() => {
     const salesFiltered = sales.filter((sale) => {
+      if (
+        user.role === "supervisor" &&
+        selectedEmployeeId !== "all" &&
+        sale.user.employeeId !== selectedEmployeeId
+      ) {
+        return false;
+      }
+
       const cpfCnpjClean = sale.cpfCnpj?.trim().replace(/\D/g, "");
 
       const isCustomerHome =
@@ -392,7 +406,7 @@ export function Home() {
     });
 
     setFilteredSales(salesFiltered);
-  }, [sales, selectedDay, selectedMonth, selectedCustomer]);
+  }, [sales, selectedDay, selectedMonth, selectedCustomer, selectedEmployeeId]);
 
   return (
     <Container>
@@ -421,7 +435,6 @@ export function Home() {
           total={installationTotal}
         />
       )}
-
       {user.role === "supervisor" && (
         <SalesSummary
           inProgress={inProgress}
@@ -437,10 +450,14 @@ export function Home() {
         selectedDay={selectedDay}
         selectedStatus={selectedStatus}
         selectedCustomer={selectedCustomer}
+        selectedEmployeeId={selectedEmployeeId}
         onMonthChange={onMonthChange}
         onDayChange={onDayChange}
         onStatusChange={onStatusChange}
         onCustomerChange={onCustomerChange}
+        onEmployeeIdChange={onEmployeeIdChange}
+        employeeIdArray={employeeIdArray}
+        userRole={user.role ?? ""}
       />
 
       <main>
