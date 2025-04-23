@@ -35,6 +35,27 @@ export const Container = styled.li`
   border-radius: 8px;
 `;
 
+export const CpfCnpj = styled.div`
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-start;
+  align-items: center;
+
+  p {
+    color: ${({ theme }) => theme.COLORS.GRAY_100};
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-size: 1.4rem;
+    text-align: start;
+  }
+
+  span {
+    color: ${({ theme }) => theme.COLORS.GRAY_300};
+    font-weight: 500;
+    font-size: 1.3rem;
+  }
+`;
+
 export const SaleContent = styled.div`
   display: flex;
   width: 100%;

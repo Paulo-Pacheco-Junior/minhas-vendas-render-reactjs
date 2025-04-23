@@ -14,16 +14,19 @@ import {
   ObservationModalButtons,
   ObservationTextArea,
   ObservationModalBox,
+  CpfCnpj,
 } from "./styles";
 import { UserContext } from "../../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import { toDate } from "date-fns-tz";
+import { TfiHome } from "react-icons/tfi";
+import { PiBuildingOfficeLight } from "react-icons/pi";
 
 export function SaleItem({ sale }: any) {
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
-  const [observation, setObservation] = useState(sale.observation);
+  const [observation, setObservation] = useState(sale?.observation);
 
   async function handleEditSale(id: string) {
     if (user.employeeId === sale.user.employeeId) {
@@ -236,10 +239,21 @@ export function SaleItem({ sale }: any) {
       >
         <SaleContent>
           <div>
-            <p>
-              <span>CPF/CNPJ:</span>
-              <br /> {sale.cpfCnpj}
-            </p>
+            <div>
+              <CpfCnpj>
+                {sale.cpfCnpj.trim().replace(/\D/g, "")?.length === 11 ? (
+                  <TfiHome size={12} />
+                ) : (
+                  <PiBuildingOfficeLight size={16} />
+                )}
+                <span>
+                  {sale.cpfCnpj.trim().replace(/\D/g, "")?.length === 11
+                    ? `CPF:`
+                    : `CNPJ:`}
+                </span>
+              </CpfCnpj>
+              <p>{sale.cpfCnpj}</p>
+            </div>
             <p>
               <span>UF:</span> {sale.region}
             </p>
@@ -303,7 +317,7 @@ export function SaleItem({ sale }: any) {
             <Observation>
               <span>Observação:</span>
               <textarea
-                value={observation}
+                value={observation ?? ""}
                 onChange={(e) => setObservation(e.target.value)}
                 onClick={handleOpenObservationModal}
               >

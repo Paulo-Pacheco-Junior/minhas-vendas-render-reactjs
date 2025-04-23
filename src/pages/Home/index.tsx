@@ -54,6 +54,9 @@ export function Home() {
     new Date().getMonth()
   );
   const [selectedStatus, setSelectedStatus] = useState<string | "all">("all");
+  const [selectedCustomer, setSelectedCustomer] = useState<string | "all">(
+    "all"
+  );
 
   const token = JSON.parse(localStorage.getItem("@token") || "[]");
 
@@ -110,6 +113,12 @@ export function Home() {
 
   const onStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedStatus(
+      e.target.value === "all" ? "all" : String(e.target.value)
+    );
+  };
+
+  const onCustomerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCustomer(
       e.target.value === "all" ? "all" : String(e.target.value)
     );
   };
@@ -305,33 +314,85 @@ export function Home() {
     "Sem_slot",
   ];
 
+  // useEffect(() => {
+  //   const salesFiltered = sales.filter((sale) => {
+  //     if (user.role === "seller") {
+  //       const installationDate = new Date(sale.installationDate);
+
+  //       if (selectedDay === "all") {
+  //         return installationDate.getMonth() === selectedMonth;
+  //       }
+  //       return (
+  //         installationDate.getMonth() === selectedMonth &&
+  //         installationDate.getDate() === selectedDay
+  //       );
+  //     } else {
+  //       const saleDate = new Date(sale.saleDate);
+
+  //       if (selectedDay === "all") {
+  //         return saleDate.getMonth() === selectedMonth;
+  //       }
+  //       return (
+  //         saleDate.getMonth() === selectedMonth &&
+  //         saleDate.getDate() === selectedDay
+  //       );
+  //     }
+  //   });
+
+  //   setFilteredSales(salesFiltered);
+  // }, [sales, selectedDay, selectedMonth]);
+
   useEffect(() => {
     const salesFiltered = sales.filter((sale) => {
+      const cpfCnpjClean = sale.cpfCnpj?.trim().replace(/\D/g, "");
+
+      const isCustomerHome =
+        selectedCustomer === "home" ? cpfCnpjClean?.length === 11 : true;
+
+      const isCustomerBusiness =
+        selectedCustomer === "business" ? cpfCnpjClean?.length === 14 : true;
+
+      if (!(isCustomerHome && isCustomerBusiness)) return false;
+
       if (user.role === "seller") {
         const installationDate = new Date(sale.installationDate);
 
         if (selectedDay === "all") {
-          return installationDate.getMonth() === selectedMonth;
+          return (
+            installationDate.getMonth() === selectedMonth &&
+            isCustomerHome &&
+            isCustomerBusiness
+          );
         }
+
         return (
           installationDate.getMonth() === selectedMonth &&
-          installationDate.getDate() === selectedDay
+          installationDate.getDate() === selectedDay &&
+          isCustomerHome &&
+          isCustomerBusiness
         );
       } else {
         const saleDate = new Date(sale.saleDate);
 
         if (selectedDay === "all") {
-          return saleDate.getMonth() === selectedMonth;
+          return (
+            saleDate.getMonth() === selectedMonth &&
+            isCustomerHome &&
+            isCustomerBusiness
+          );
         }
+
         return (
           saleDate.getMonth() === selectedMonth &&
-          saleDate.getDate() === selectedDay
+          saleDate.getDate() === selectedDay &&
+          isCustomerHome &&
+          isCustomerBusiness
         );
       }
     });
 
     setFilteredSales(salesFiltered);
-  }, [sales, selectedDay, selectedMonth]);
+  }, [sales, selectedDay, selectedMonth, selectedCustomer]);
 
   return (
     <Container>
@@ -375,9 +436,11 @@ export function Home() {
         selectedMonth={selectedMonth}
         selectedDay={selectedDay}
         selectedStatus={selectedStatus}
+        selectedCustomer={selectedCustomer}
         onMonthChange={onMonthChange}
         onDayChange={onDayChange}
         onStatusChange={onStatusChange}
+        onCustomerChange={onCustomerChange}
       />
 
       <main>

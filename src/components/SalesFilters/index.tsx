@@ -4,18 +4,22 @@ interface SalesFiltersProps {
   selectedMonth: number;
   selectedDay: number | "all";
   selectedStatus: string | "all";
+  selectedCustomer: string | "all";
   onMonthChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onDayChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onStatusChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onCustomerChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 export function SalesFilters({
   selectedMonth,
   selectedDay,
   selectedStatus,
+  selectedCustomer,
   onMonthChange,
   onDayChange,
   onStatusChange,
+  onCustomerChange,
 }: SalesFiltersProps) {
   return (
     <Container>
@@ -63,6 +67,16 @@ export function SalesFilters({
         <option value="installed">Instaladas</option>
         <option value="pending">Pendentes</option>
         <option value="canceled">Canceladas</option>
+      </select>
+
+      <select
+        value={selectedCustomer}
+        onChange={onCustomerChange}
+        style={{ marginLeft: "0.5rem" }}
+      >
+        <option value="all">Todos os clientes</option>
+        <option value="home">Residencial</option>
+        <option value="business">Empresarial</option>
       </select>
     </Container>
   );
