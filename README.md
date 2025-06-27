@@ -6,6 +6,10 @@
 
 ---
 
+- **Site em Produção:** 🌐 [https://vendasreact.vercel.app](https://vendasreact.vercel.app)
+
+---
+
 ## Funcionalidades ✨
 
 - Cadastro e login de usuários com validação dos dados.
@@ -31,6 +35,15 @@
 - styled-components
 - Context API (para gerenciamento do usuário)
 - API REST (endpoint hospedado em Railway)
+
+---
+
+## API Utilizada 🔗
+
+Este front-end consome uma API RESTful desenvolvida em Node.js, TypeScript e Prisma.
+
+- **API em Produção:** 🖥️ [https://sales-manager-1-0-1.onrender.com](https://sales-manager-1-0-1.onrender.com)
+- **Repositório do Backend:** 📂 [github.com/Paulo-Pacheco-Junior/sales-manager-1.0](https://github.com/Paulo-Pacheco-Junior/sales-manager-1.0)
 
 ---
 
