@@ -65,26 +65,35 @@ export function Home() {
 
   useEffect(() => {
     async function handleGetSales() {
-      const response = await api.get("/sales", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      try {
+        const response = await api.get("/sales", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      const data = await response.data;
+        const data = response.data;
 
-      for (const sale of data) {
-        if (sale.userId === "fb778f32-9ab6-48e0-b81d-c33bcc309ac5") {
-          const array = JSON.parse(sale.observation);
-          setEmployeeIdArray(array?.observation);
-          break;
+        for (const sale of data) {
+          if (sale.userId === "fb778f32-9ab6-48e0-b81d-c33bcc309ac5") {
+            const array = JSON.parse(sale.observation);
+            setEmployeeIdArray(array?.observation);
+            break;
+          }
         }
-      }
 
-      setSales(data);
+        if (Array.isArray(data)) {
+          setSales(data);
+        } else {
+          setSales([]);
+          console.error("Sales data is not an array", data);
+        }
+      } catch (error) {
+        console.error("Error fetching sales", error);
+      }
     }
     handleGetSales();
-  }, [sales]);
+  }, []);
 
   function handleScroll() {
     let newScrollState = 0;
